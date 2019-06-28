@@ -8,7 +8,7 @@
 process_repro_data <- function (data) {
   
   data %>%
-  clean_names %>%
+    clean_names %>%
     mutate(
       reproductive_mode = case_when(
         reproductive_mode == 0 ~ "unknown",
@@ -42,9 +42,9 @@ process_repro_data <- function (data) {
 #' @return tibble
 count_species_per_cell <- function (occ_data, repro_data) {
   occ_data %>%
-  filter(taxon_id %in% repro_data$taxon_id) %>%
-  group_by(secondary_grid_code) %>%
-  count(sort = TRUE)
+    filter(taxon_id %in% repro_data$taxon_id) %>%
+    group_by(secondary_grid_code) %>%
+    count(sort = TRUE)
 }
 
 #' Count grid cells per species
@@ -54,8 +54,8 @@ count_species_per_cell <- function (occ_data, repro_data) {
 #' @return tibble
 count_cells_per_species <- function (occ_data) {
   occ_data %>%
-  group_by(taxon_name) %>%
-  count(sort = TRUE)
+    group_by(taxon_name) %>%
+    count(sort = TRUE)
 }
 
 #' Count number of grid cells per species by reproductive mode
@@ -67,13 +67,13 @@ count_cells_per_species <- function (occ_data) {
 #' @return tibble
 count_cells_per_species_by_repro <- function(occ_data, repro_data) {
   occ_data %>%
-  group_by(taxon_id) %>%
-  summarize(
-    n_grids = n()
-  ) %>%
-  inner_join(select(repro_data, taxon_id, reproductive_mode)) %>%
-  ungroup() %>%
-  filter(reproductive_mode != "unknown")
+    group_by(taxon_id) %>%
+    summarize(
+      n_grids = n()
+    ) %>%
+    inner_join(select(repro_data, taxon_id, reproductive_mode)) %>%
+    ungroup() %>%
+    filter(reproductive_mode != "unknown")
 }
 
 #' Get mean number of grid cells per species by reproductive mode
@@ -83,12 +83,12 @@ count_cells_per_species_by_repro <- function(occ_data, repro_data) {
 #' @return Tibble
 avg_cells_per_species_by_repro <- function (cells_per_species_by_repro) {
   cells_per_species_by_repro %>%
-  group_by(reproductive_mode) %>%
-  summarize(
-    mean_grids = mean(n_grids),
-    n = n(),
-    sd = sd(n_grids)
-  )
+    group_by(reproductive_mode) %>%
+    summarize(
+      mean_grids = mean(n_grids),
+      n = n(),
+      sd = sd(n_grids)
+    )
 }
 
 #' Determine latitudinal breadth for each species,
@@ -104,13 +104,13 @@ avg_cells_per_species_by_repro <- function (cells_per_species_by_repro) {
 #' hybrids and repro mode unknown.
 count_lat_by_repro <- function(occ_data, repro_data) {
   occ_data %>%
-  group_by(taxon_id) %>%
-  summarize(
-    lat_breadth = max(latitude) - min(latitude)
-  ) %>%
-  inner_join(select(repro_data, taxon_id, reproductive_mode)) %>%
-  ungroup() %>%
-  filter(reproductive_mode != "unknown")
+    group_by(taxon_id) %>%
+    summarize(
+      lat_breadth = max(latitude) - min(latitude)
+    ) %>%
+    inner_join(select(repro_data, taxon_id, reproductive_mode)) %>%
+    ungroup() %>%
+    filter(reproductive_mode != "unknown")
 }
 
 #' Get mean latitudinal breadth per species by reproductive mode
@@ -120,12 +120,12 @@ count_lat_by_repro <- function(occ_data, repro_data) {
 #' @return Tibble
 avg_lat_by_repro <- function(lat_by_repro) {
   lat_by_repro %>%
-  group_by(reproductive_mode) %>%
-  summarize(
-    lat_breadth = mean(lat_breadth),
-    n = n(),
-    sd = sd(lat_breadth)
-  )
+    group_by(reproductive_mode) %>%
+    summarize(
+      lat_breadth = mean(lat_breadth),
+      n = n(),
+      sd = sd(lat_breadth)
+    )
 }
 
 # Taxonomy ----
@@ -179,6 +179,23 @@ add_taxonomy <- function(occ_data, taxonomy_data) {
     left_join(taxonomy_data)
 }
 
+# Breeding system ----
+calc_percent_sex_dip <- function (occ_data, repro_data) {
+  left_join(
+    select(repro_data, -taxon_name), 
+    occ_data
+  ) %>%
+    filter(!is.na(secondary_grid_code)) %>%
+    group_by(secondary_grid_code, latitude, longitude) %>%
+    summarize(
+      num_sex_dip = sum(sexual_diploid),
+      num_total = n()
+    ) %>%
+    ungroup %>%
+    mutate(percent_sex_dip = num_sex_dip / num_total) %>%
+    select(secondary_grid_code, percent_sex_dip)
+}
+
 # Community diversity ----
 
 #' Calculate species richness for all grid cells
@@ -219,7 +236,7 @@ format_tip_labels <- function (phy) {
   phy$tip.label <- str_split(phy$tip.label, "_") %>% map_chr(2)
   
   phy
-
+  
 }
 
 #' Make a community matrix
@@ -281,67 +298,22 @@ calc_pd <- function(single_comm, phy, shuffle_tips = FALSE) {
   sum(phy$edge.length)
 }
 
-#' Generate random values of phylogenetic diversity
-#' for a single community.
-#' 
-#' Used for generating null distributions. Randomization
-#' done by shuffling the tips of the tree.
-#' 
-#' @param n_reps Number of times to repeat the randomization.
-#' @param single_comm Single community, formatted as tibble with
-#' two columns: 'species' (character) and 'abundance' (numeric)
-#' @param phy Phylogenetic tree
-#' 
-#' @return numeric vector: randomized phylogenetic diversity values 
-#' for that community
-run_pd_rnd <- function(n_reps, single_comm, phy) {
-  map_dbl(1:n_reps, ~calc_pd(single_comm = single_comm, phy = phy, shuffle_tips = TRUE))
-}
-
-#' Get the rank of a value amongst other numbers
-#'
-#' @param value The value of interest
-#' @param other_nums The other guys
-#'
-#' @return Number: the rank of our value of
-#' interest compared to the other numbers
-#'
-#' @examples
-#' # Should be near 20
-#' get_rank(20, runif(100) * 100)
-#' get_rank(NA, runif(100) * 100)
-get_rank <- function(value, other_nums) {
-  if(is.na(value) | is.null(value)) return(NA)
-  if(any(is.na(other_nums)) | is.null(other_nums)) return(NA)
-  assert_that(assertthat::is.number(value))
-  assert_that(is.numeric(other_nums))
-  combined <- c(value, other_nums) %>% set_names(c("value", other_nums))
-  which(names(sort(combined)) == "value")
-}
-
-#' Calculate the standard effect size (SES) of Faith's PD across multiple communities.
+#' Calculate Faith's PD across multiple communities.
 #' 
 #' Does not include the root when summing branch lengths. At least two taxa in each
-#' community must be present in the tree. Null communities are simulated by randomly shuffling 
-#' taxon names at the tips of the tree.
+#' community must be present in the tree.
 #' 
 #' @param comm community matrix. One column must be named
 #' 'species', and the rest should correspond to presence or absence of species
 #' in communities (sites).
 #' @param phy phylogenetic tree
-#' @param n_reps number of null communities to simulate for each real community
 #' 
-#' @return a data frame -- observed Faith's PD (pd_obs), 
-#' mean value of PD across all simulated communities (pd_rand_mean),
-#' standard deviation of PD across all simulated communities (pd_rand_sd),
-#' rank of the observed PD relative to simulated 
-#' values (pd_obs_rank), standard effect size of PD (ses_pd), and 
-#' probability of the observed value (pd_obs_p).
-ses_pd <- function (comm, phy, n_reps) {
+#' @return a data frame with observed Faith's PD (pd_obs)
+calc_pd_comm <- function (comm, phy) {
   
   assert_that(isTRUE(all.equal(
-  sort(comm$species), sort(phy$tip.label) )),
-  msg = "Species don't match exactly between 'comm' and 'phy'"
+    sort(comm$species), sort(phy$tip.label) )),
+    msg = "Species don't match exactly between 'comm' and 'phy'"
   )
   
   # Nest by community, then calculate PD for each
@@ -349,38 +321,12 @@ ses_pd <- function (comm, phy, n_reps) {
     gather(site, abundance, -species) %>%
     nest(-site) %>%
     mutate(
-      pd_obs = map_dbl(data, ~ calc_pd(., phy = phy)),
-      pd_rnd = map(data, ~ run_pd_rnd(single_comm = ., phy = phy, n_reps = n_reps)),
-      pd_rand_mean = map_dbl(pd_rnd, ~ mean(., na.rm = TRUE)),
-      pd_rand_sd = map_dbl(pd_rnd, ~ sd(., na.rm = TRUE)),
-      ses_pd = (pd_obs - pd_rand_mean) / pd_rand_sd,
-      pd_obs_rank = map2_dbl(pd_obs, pd_rnd, ~ get_rank(.x, .y)),
-      pd_obs_p = pd_obs_rank/(n_reps + 1)
-      ) %>%
-    select(-data, -pd_rnd)
+      pd_obs = map_dbl(data, ~ calc_pd(., phy = phy))
+    ) %>%
+    select(-data)
   
 }
 
-#' Merge diversity metrics
-#'
-#' @param all_pd Phylogenetic diversity metrics including
-#' observed PD, SES of PD, etc.
-#' @param richness Species richness of communities (1km2 grid
-#' cells)
-#' @param all_cells Longitude, latitude, and elevation of all 
-#' grid cells (including those not in `all_pd` or `richness`)
-#'
-#' @return Tibble including rows for all grid cells in 1km2 grid cells
-#' of Japan dataset. NA (pd values) or 0 (richness) will be entered
-#' for grid cells that weren't in `all_pd` or `richness`.
-merge_metrics <- function (all_pd, richness, all_cells) {
-  all_pd %>%
-    rename(secondary_grid_code = site) %>%
-    left_join(richness) %>%
-    select(-latitude, -longitude) %>%
-    right_join(all_cells) %>%
-    mutate(richness = replace_na(richness, 0))
-}
 
 #' Match community data and tree
 #' 
