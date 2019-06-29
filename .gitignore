@@ -4,6 +4,8 @@
 .Ruserdata
 *.Rproj
 data/
+drafts/
 *.docx
 *.doc
+*.html
 .drake
