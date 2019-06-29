@@ -1,0 +1,130 @@
+---
+title: "Biodiversity of Japanese Pteridophytes"
+author: "Joel Nitta"
+date: "6/28/2019"
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    number_sections: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+```{r load-data}
+loadd(world_map)
+loadd(occ_data_pteridos)
+loadd(occ_data_ferns)
+loadd(occ_data_apos)
+loadd(alpha_div_pteridos)
+loadd(alpha_div_ferns)
+loadd(richness_apos)
+loadd(percent_apomictic_ferns)
+```
+
+### Richness
+
+Richness of pteridophytes in Japan roughly follows the latitudinal species gradient, with more species in the south (Fig. \@ref(fig:richness-pteridos)).
+
+```{r pd-by-rich-summary}
+# Run exponential model of raw PD vs. richness across all pteridophytes and
+# extract R2 and pvalue for mentioning in text.
+
+# Two ways to fit the model:
+# GLM
+pd_by_rich_glm_mod <- glm(pd_obs + 0.0001 ~ richness, data=alpha_div_pteridos, family=Gamma(link="log"))
+summary(pd_by_rich_glm_mod)
+
+# Linear model after log transform. This one gives us an R-squared.
+pd_by_rich_lm_mod <- lm(-log(pd_obs + 0.0001) ~ richness, data = alpha_div_pteridos)
+
+# Extract R-squared.
+pd_by_rich_r2 <- pd_by_rich_lm_mod %>% glance %>% pull(r.squared) %>% round(3)
+
+# P is very very small, effectively 0
+pd_by_rich_lm_mod %>% glance
+```
+
+## Figures
+
+```{r richness-pteridos, fig.cap = "Richness of native Japanese pteridophyte taxa."}
+make_diversity_map(
+    div_data = alpha_div_pteridos, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "richness", 
+    metric_title = "Richness"
+  ) + scale_fill_scico(palette = "bilbao", na.value="white")
+```
+
+```{r compare-obs-pd-richness, fig.cap = "Correlation between observed phylogenetic diversity (PD) and species richness, for all native Japanese pteridophyte taxa excluding hybrids. Blue trendline shows significant exponential model fit with confidence interval in pink."}
+# Shift pd_obs up by an arbitrarily small amount so the exponential curve can be fit.
+
+ggplot(alpha_div_pteridos, aes(richness, pd_obs + 0.0001)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(
+    formula = -log(pd_obs + 0.0001) ~ richness,
+    size = 0.5,
+    fill = "pink") +
+  annotate("text", 
+           x = 0, y = Inf, 
+           label = glue::glue("italic(R) ^ 2 == {pd_by_rich_r2}"),
+           parse = TRUE,
+           hjust = 0,
+           vjust = 1.2) +
+  labs(
+    y = "Observed PD",
+    x = "Richness"
+  ) +
+  jntools::standard_theme()
+
+```
+
+```{r pd-pteridos, fig.cap = "Phylogenetic diversity (PD) of native Japanese pteridophyte taxa, excluding hybrids."}
+make_diversity_map(
+    div_data = alpha_div_pteridos, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "pd_obs", 
+    metric_title = "PD"
+  ) + scale_fill_scico(
+    palette = "bilbao", 
+    na.value="white")
+```
+
+```{r pd-ferns, fig.cap = "Phylogenetic diversity (PD) of native Japanese fern taxa, excluding hybrids."}
+make_diversity_map(
+    div_data = alpha_div_ferns, 
+    world_map = world_map, 
+    occ_data = occ_data_ferns, 
+    div_metric = "pd_obs", 
+    metric_title = "SES of PD"
+  ) + scale_fill_scico(
+    palette = "bilbao", 
+    na.value="white")
+```
+
+```{r richness-apos, fig.cap = "Richness of apomictic native Japanese fern taxa."}
+make_diversity_map(
+    div_data = richness_apos, 
+    world_map = world_map, 
+    occ_data = occ_data_ferns, 
+    div_metric = "richness", 
+    metric_title = "Richness"
+  ) + scale_fill_scico(
+    palette = "bilbao", 
+    na.value="white")
+```
+
+```{r proportion-apos, fig.cap = "Proportion of apomicitic taxa to all the taxa."}
+make_diversity_map(
+    div_data = percent_apomictic_ferns, 
+    world_map = world_map, 
+    occ_data = occ_data_ferns, 
+    div_metric = "percent_apomictic", 
+    metric_title = "% apomictic"
+  ) + scale_fill_scico(
+    palette = "bilbao", 
+    na.value="white")
+```

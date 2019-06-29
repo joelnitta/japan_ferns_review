@@ -1,6 +1,6 @@
 # make.R
 
-# Master script for running Pleurorosiopsis analyses.
+# Master script for running analyses.
 # This project uses drake to manage workflows.
 # For more information about drake, see
 # https://ropensci.github.io/drake/

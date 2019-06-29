@@ -26,8 +26,7 @@ process_repro_data <- function (data) {
         TRUE ~ FALSE
       )
     ) %>%
-    rename(rbcl_genbank_no = rbc_l_gen_bank_accession_no) %>%
-    mutate(rbcl_genbank_no = str_remove_all(rbcl_genbank_no, "\\*"))
+    select(taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid) 
   
 }
 
@@ -37,7 +36,7 @@ process_repro_data <- function (data) {
 #'
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
-#' @param repro_data Reproductive mode mata, with
+#' @param repro_data Reproductive mode data, with
 #' one row per taxon, excluding hybrids.
 #' @return tibble
 count_species_per_cell <- function (occ_data, repro_data) {
@@ -180,20 +179,40 @@ add_taxonomy <- function(occ_data, taxonomy_data) {
 }
 
 # Breeding system ----
-calc_percent_sex_dip <- function (occ_data, repro_data) {
-  left_join(
-    select(repro_data, -taxon_name), 
-    occ_data
+
+#' Calculate the percentage of apomictic taxa in a given grid cell
+#'
+#' @param occ_data Occurence data, including
+#' a column called "taxon_name" where
+#' the first word separated by spaces is the genus name,
+#' and "secondary_grid_cell" where that species occurs.
+#' @param repro_data Reproductive mode data, with
+#' one row per taxon, excluding hybrids.
+#' @param all_cells List of all 1km2 grid cells with
+#' grid cell code and long/lat.
+#'
+#' @return tibble
+calc_percent_apomictic <- function (occ_data, repro_data, all_cells) {
+  inner_join(
+    occ_data,
+    repro_data
   ) %>%
     filter(!is.na(secondary_grid_code)) %>%
+    mutate(is_apo = case_when(
+      reproductive_mode == "apomictic" ~ TRUE,
+      TRUE ~ FALSE
+    )) %>%
     group_by(secondary_grid_code, latitude, longitude) %>%
     summarize(
-      num_sex_dip = sum(sexual_diploid),
+      num_apomictic = sum(is_apo),
       num_total = n()
     ) %>%
     ungroup %>%
-    mutate(percent_sex_dip = num_sex_dip / num_total) %>%
-    select(secondary_grid_code, percent_sex_dip)
+    mutate(percent_apomictic = num_apomictic / num_total) %>%
+    select(secondary_grid_code, percent_apomictic) %>%
+    # Add 0s for cells with no occurrence data
+    right_join(all_cells) %>%
+    mutate(percent_apomictic = replace_na(percent_apomictic, 0))
 }
 
 # Community diversity ----

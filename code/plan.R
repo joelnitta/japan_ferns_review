@@ -39,6 +39,12 @@ plan <- drake_plan (
     assert(not_na, class) %>%
     filter(class == "Polypodiopsida"),
   
+  # - occurrence data including apomictic fern taxa only
+  occ_data_apos = 
+    occ_data_ferns %>%
+    left_join(repro_data) %>%
+    filter(reproductive_mode == "apomictic"),
+  
   # Read in raw phylogenetic tree of all non-hybrid pteridophyte
   # taxa based on rbcL gene.
   japan_pterido_tree_raw = read.nexus("data/PD170708Bayes2.nxs"),
@@ -46,7 +52,6 @@ plan <- drake_plan (
   # Process trees.
   # - tree including ferns and lycophtyes
   japan_pterido_tree = format_tip_labels(japan_pterido_tree_raw),
-  
   # - tree including ferns only
   japan_fern_tree = drop.tip(
     japan_pterido_tree, 
@@ -109,9 +114,18 @@ plan <- drake_plan (
   
   # Make richness matrix (number of species per
   # 1km2 grid cell).
+  
+  # NEED TO BE CONSISTENT ABOUT ALL CELLS HERE OR NOT
+  # doesn't have all cells yet, just those in occ data
   richness_pteridos = make_richness_matrix(occ_data_pteridos),
   
   richness_ferns = make_richness_matrix(occ_data_ferns),
+  
+  richness_apos = make_richness_matrix(occ_data_apos) %>%
+    # Add all cells, including those missing from occ_data
+    select(-latitude, -longitude) %>%
+    right_join(all_cells) %>%
+    mutate(richness = replace_na(richness, 0)),
   
   # Make community matrix (presence/absence of each species in
   # 1km2 grid cells), trim to only species in tree.
@@ -123,41 +137,33 @@ plan <- drake_plan (
   
   ### Calculate raw phylogenetic diversity ----
   
-  # Combine PD and richness into single dataframe.
-  # Add elevation and lat/longs for all 1km2 grid cells, even for those
-  # that didn't have any species.
+  # Calculate PD
   pd_pteridos = calc_pd_comm(comm_pteridos, japan_pterido_tree),
   
   pd_ferns = calc_pd_comm(comm_ferns, japan_fern_tree),
   
-  # Analyze percentage of sexual diploids.
-  percent_sex_dip_pteridos = calc_percent_sex_dip(
-    occ_data_pteridos,
-    repro_data
-  ),
-  
-  percent_sex_dip_ferns = calc_percent_sex_dip(
+  # Calculate percentage of apomictic ferns.
+  percent_apomictic_ferns = calc_percent_apomictic(
     occ_data_ferns,
-    repro_data
+    repro_data,
+    all_cells
   ),
   
   # Combine all diversity metrics into single dataframe.
   alpha_div_pteridos = all_cells %>%
     left_join(select(richness_pteridos, secondary_grid_code, richness)) %>%
     left_join(select(pd_pteridos, secondary_grid_code = site, pd_obs)) %>%
-    left_join(percent_sex_dip_pteridos) %>%
     # NA for records of taxa in a cell means richness is 0.
     mutate(richness = replace_na(richness, 0)),
   
   alpha_div_ferns = all_cells %>%
     left_join(select(richness_ferns, secondary_grid_code, richness)) %>%
     left_join(select(pd_ferns, secondary_grid_code = site, pd_obs)) %>%
-    left_join(percent_sex_dip_ferns) %>%
-    mutate(richness = replace_na(richness, 0)) #,
+    mutate(richness = replace_na(richness, 0)),
 
   # Write out manuscript ----
-  # report = rmarkdown::render(
-  #   knitr_in(here::here("reports/japan_pteridos_biodiv.Rmd")),
-  #   output_file = file_out(here::here("reports/japan_pteridos_biodiv.html")),
-  #   quiet = TRUE)
+  report = rmarkdown::render(
+    knitr_in(here::here("reports/analysis_report.Rmd")),
+    output_file = file_out(here::here("reports/analysis_report.html")),
+    quiet = TRUE)
 )
