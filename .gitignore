@@ -9,3 +9,4 @@ drafts/
 *.doc
 *.html
 .drake
+*_cache/
