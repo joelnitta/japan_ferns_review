@@ -4,7 +4,14 @@ output: word_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE, eval = TRUE, cache = TRUE, results = "hide")
+
+# Load targets made from plan
+loadd(taxonomic_data)
+loadd(ppgi)
+loadd(all_cells)
+loadd(occ_data_pteridos)
+
 ```
 
 An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago
@@ -17,7 +24,17 @@ Ferns and lycophytes or seed-free vascular plants, also traditionally known as �
 
 ## Flora
 
-The studies on fern and lycophyte flora of the Japanese Archipelago initiated with 44 species enumerated in Thunberg (1786)’s “Flora Japonica”. Thereafter the number of recognized species native to there are gradually increasing: 460 species including subspecies and varieties (Makino and Nemoto 1925), ca. 400 species excluding those in Ogasawara (Bonin) and Ryukyu Islands (Tagawa 1959) and 630 species (Iwatsuki 1995). Our latest checklist of native species of Japan ‘FernGreenList ver. 1.01’ (Ebihara et al. 2017a) comprises 691 species (721 taxa including subspecies and varieties [Electronic supplementary material 1]; hereafter call ‘taxa’) belonging to 37 of the 51 families accepted in PPGI (Pteridophyte Phylogeny Group 2016). As almost no uninvestigated area remains in the archipelago, most of the new additions to the flora after the 1990’s are newly segregated species from known ones based on evidences from ploidy levels, enzyme analyses and/or DNA sequences (e.g. Ebihara et al. 2019a, Fujiwara et al. 2018, Hori et al. 2015, 2018a, 2018c, Lin et al. 1994, 1996, Masuyama and Watano 2010, Murakami et al. 1999, Ohta and Takamiya 1999, Serizawa 2015, Takamiya et al. 1997) along with only small number of brand-new records (Ebihara et al. 2014, 2019a). The number of taxa in Japan is nearly identical to that in Taiwan (721 taxa excluding forms and hybrids, Knapp 2014). The strongest floristic affinity is found to the continental part of China sharing 487 taxa (67.5%), almost corresponding to two thirds of the native taxa in Japan (Ebihara 2016, 2017). Accumulated up-to-date information identified 125 endemic taxa (17.3% of the native taxa) to Japan (Ebihara 2018). 
+```{r flora-numbers}
+n_taxa <- taxonomic_data %>% pull(taxon_name) %>% n_distinct
+n_species <- taxonomic_data %>% pull(species_name) %>% n_distinct
+n_families <- taxonomic_data %>% pull(family) %>% n_distinct
+
+# Make sure the number of ppgi families in our data match
+# the official number
+assert_that(ppgi %>% pull(family) %>% n_distinct == 51)
+```
+
+The studies on fern and lycophyte flora of the Japanese Archipelago initiated with 44 species enumerated in Thunberg (1786)’s “Flora Japonica”. Thereafter the number of recognized species native to there are gradually increasing: 460 species including subspecies and varieties (Makino and Nemoto 1925), ca. 400 species excluding those in Ogasawara (Bonin) and Ryukyu Islands (Tagawa 1959) and 630 species (Iwatsuki 1995). Our latest checklist of native species of Japan ‘FernGreenList ver. 1.01’ (Ebihara et al. 2017a) comprises `r n_species` species (`r n_taxa` taxa including subspecies and varieties [Electronic supplementary material 1]; hereafter call ‘taxa’) belonging to `r n_families` of the 51 families accepted in PPGI (Pteridophyte Phylogeny Group 2016). As almost no uninvestigated area remains in the archipelago, most of the new additions to the flora after the 1990’s are newly segregated species from known ones based on evidences from ploidy levels, enzyme analyses and/or DNA sequences (e.g. Ebihara et al. 2019a, Fujiwara et al. 2018, Hori et al. 2015, 2018a, 2018c, Lin et al. 1994, 1996, Masuyama and Watano 2010, Murakami et al. 1999, Ohta and Takamiya 1999, Serizawa 2015, Takamiya et al. 1997) along with only small number of brand-new records (Ebihara et al. 2014, 2019a). The number of taxa in Japan is nearly identical to that in Taiwan (721 taxa excluding forms and hybrids, Knapp 2014). The strongest floristic affinity is found to the continental part of China sharing 487 taxa (67.5%), almost corresponding to two thirds of the native taxa in Japan (Ebihara 2016, 2017). Accumulated up-to-date information identified 125 endemic taxa (17.3% of the native taxa) to Japan (Ebihara 2018). 
 
 ## Interspecific hybrids
 
@@ -25,9 +42,58 @@ Hybrid ferns have been widely utilized as material of evolutionary biological st
 
 ## Occurrence data and regional species richness
 
-Eight volumes of "Illustrations of Pteridophytes of Japan" (Kurata and Nakaike, 1979, 1981, 1983, 1985, 1987, 1990, 1994, 1997) were a pioneer work of a nationwide organism distribution survey by citizens in Japan. Along with brief description about each species, these books featured 10 km-grid based distribution maps vouchered by ca. 180000 specimens collected by the members of the Nippon Fernist Club. A large part of the specimens presently deposited in the herbarium of National Museum of Nature and Science (TNS) were recently re-identified accommodating up-to-date species circumscription, and ca. 35000 specimens which are new records on the 10 km-grids were newly collected by the club members. Occurrences based on specimens are usually regarded as presence-only data, but present grid maps can be virtually regarded as presence/absence data as the results of the members’ extensive searching in the field. For the convenience in reusing the occurrence data, a list of specimens which assure the distribution maps in Ebihara (2016, 2017) are publicized here, and it contains 216687 herbarium specimen records (Electronic supplementary material 2). We should note that our policy for the dataset is to include specimens or specimen-images examined by ourselves (only exception is Isoetes occurrences which cited from a specimens list provided by Takamiya et al. [1997]). At least one species is recorded in 4343 of 4853 grids (89.5 %), and the species occurred in the maximum number of grids is Pteridium aquilinum subsp. japonicum (Dennstaedtiaceae) recorded in 2777 grids (57.2%).
+```{r occ-data-numbers}
+loadd(cells_per_species)
+loadd(species_per_cell)
+loadd(all_cells)
+
+# Number of grid cells total
+n_grid_cells <- all_cells %>% pull(secondary_grid_code) %>% n_distinct
+# Number of cells with at least one species observed
+n_cells_with_occ <- occ_data_pteridos %>% pull(secondary_grid_code) %>% n_distinct
+
+# What is the most common species (occuring in the greatest number of grid cells)?
+most_common_sp <- cells_per_species %>% arrange(desc(n)) %>% slice(1) %>% pull(taxon_name)
+# How many grid cells does it occur in?
+most_common_sp_count <- cells_per_species %>% arrange(desc(n)) %>% slice(1) %>% pull(n)
+# Verify that the most common sp is what we mention in the text
+assert_that(most_common_sp == "Pteridium aquilinum subsp. japonicum")
+
+# What is grid cell with the most species?
+highest_richness_cell <- species_per_cell %>% arrange(desc(n)) %>% slice(1) %>% pull(secondary_grid_code)
+# How many taxa does it have, excluding hybrids?
+highest_richness_cell_n_taxa <-
+occ_data_pteridos %>%
+  filter(secondary_grid_code == highest_richness_cell) %>%
+  filter(taxon_id %in% repro_data$taxon_id) %>%
+  pull(taxon_id) %>%
+  n_distinct
+
+# What is grid cell with the second-most species?
+highest_richness_cell_2 <- species_per_cell %>% arrange(desc(n)) %>% slice(2) %>% pull(secondary_grid_code)
+# How many taxa does it have, excluding hybrids?
+highest_richness_cell_n_taxa_2 <-
+occ_data_pteridos %>%
+  filter(secondary_grid_code == highest_richness_cell_2) %>%
+  filter(taxon_id %in% repro_data$taxon_id) %>%
+  pull(taxon_id) %>%
+  n_distinct
+
+# What is grid cell with the third-most species?
+highest_richness_cell_3 <- species_per_cell %>% arrange(desc(n)) %>% slice(3) %>% pull(secondary_grid_code)
+# How many taxa does it have, excluding hybrids?
+highest_richness_cell_n_taxa_3 <-
+occ_data_pteridos %>%
+  filter(secondary_grid_code == highest_richness_cell_3) %>%
+  filter(taxon_id %in% repro_data$taxon_id) %>%
+  pull(taxon_id) %>%
+  n_distinct
+
+```
+
+Eight volumes of "Illustrations of Pteridophytes of Japan" (Kurata and Nakaike, 1979, 1981, 1983, 1985, 1987, 1990, 1994, 1997) were a pioneer work of a nationwide organism distribution survey by citizens in Japan. Along with brief description about each species, these books featured 10 km-grid based distribution maps vouchered by ca. 180000 specimens collected by the members of the Nippon Fernist Club. A large part of the specimens presently deposited in the herbarium of National Museum of Nature and Science (TNS) were recently re-identified accommodating up-to-date species circumscription, and ca. 35000 specimens which are new records on the 10 km-grids were newly collected by the club members. Occurrences based on specimens are usually regarded as presence-only data, but present grid maps can be virtually regarded as presence/absence data as the results of the members’ extensive searching in the field. For the convenience in reusing the occurrence data, a list of specimens which assure the distribution maps in Ebihara (2016, 2017) are publicized here, and it contains `r nrow(occ_data_pteridos)` herbarium specimen records (Electronic supplementary material 2). We should note that our policy for the dataset is to include specimens or specimen-images examined by ourselves (only exception is Isoetes occurrences which cited from a specimens list provided by Takamiya et al. [1997]). At least one species is recorded in `r n_cells_with_occ` of `r n_grid_cells` grids (`r percent(n_cells_with_occ/n_grid_cells)`), and the species occurred in the maximum number of grids is Pteridium aquilinum subsp. japonicum (Dennstaedtiaceae) recorded in `r most_common_sp_count` grids (`r percent(most_common_sp_count/n_grid_cells)`).
 Even not included in present dataset, much larger number of specimen data without images are available on-line via Science Museum Net (http://science-net.kahaku.go.jp/) which is a portal of natural history specimens deposited in museums in Japan, and the occurrence data are also searchable in the GBIF data portal (https://www.gbif.org/). As of May 23, 2019, Japan is the country of locality with the largest number of fern and lycophyte specimens in GBIF, totally 531311 occurrences.
-In the summary of species richness in 10 km-grids excluding nothotaxa (Fig. 1a), the grids with the highest (212 taxa, grid code: 453034) and the second highest diversity (210 taxa, grid code: 453044) are found in the mountain area of Yakushima Island, located south of Kyushu including the island’s highest peak (Mt. Miyanoura, 1936 m in elevation). The third highest grid (202 taxa, grid code 503547) is located in the area covering Nachi-no-taki Falls in southern part of Wakayama Prefecture, southern Honshu.
+In the summary of species richness in 10 km-grids excluding nothotaxa (Fig. 1a), the grids with the highest (`r highest_richness_cell_n_taxa` taxa, grid code: `r highest_richness_cell`) and the second highest diversity (`r highest_richness_cell_n_taxa_2` taxa, grid code: `r highest_richness_cell_2`) are found in the mountain area of Yakushima Island, located south of Kyushu including the island’s highest peak (Mt. Miyanoura, 1936 m in elevation). The third highest grid (`r highest_richness_cell_n_taxa_3` taxa, grid code `r highest_richness_cell_3`) is located in the area covering Nachi-no-taki Falls in southern part of Wakayama Prefecture, southern Honshu.
 
 By adding phylogenetic information, we are able to overview the diversity distribution patterns by a different measure from species number. We updated the rbcL sequence dataset to cover 97.8 % of the native taxa by making several additions and corrections to that prepared by Ebihara et al. (2010) (Electronic supplementary material 1), and then Phylogenetic Diversity (PD, “the minimum total length of all the phylogenetic branches required to span a given set of taxa on the phylogenetic tree”, Faith 1992, 2006) on a tree for every grid was calculated using Phylogenetic Diversity Analyzer ver. 1.0.3 (Chernomor et al. 2015). In the analysis with a dataset covering all ferns and lycophyte taxa considering the tree unrooted (Fig. 1b), the highest PD value was obtained in a grid in Wakayama Prefecture (grid code: 503547), the second highest one in the northern part of the Okinawa Island (grid code: 402801) and third largest one in Iriomote Island (grid code: 362346) located in the southwesternmost part of the Archipelago. These rankings were not significantly changed when we analyzed a dataset with only fern occurrences rooted by a lycophyte (Lycopodium clavatum var. nipponicum) (Fig. 1c). In the result of PD analyses, the Yakushima grid (grid code: 453034) with maximum species richness was ranked 12th in the PD analysis using ferns+lycophytes, and 10th in that only using ferns, respectively. The disparity of the results might suggest the difference in their constituent species – species richness in Yakushima Island is resulted from presence of some species rich genera (e.g. 19 taxa of Dryopteris, 16 taxa of Diplazium, 14 taxa of Athyrium).
 

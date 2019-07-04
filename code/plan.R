@@ -165,8 +165,8 @@ plan <- drake_plan (
     mutate(richness = replace_na(richness, 0)),
 
   # Write out manuscript ----
-  report = rmarkdown::render(
-    knitr_in(here::here("reports/analysis_report.Rmd")),
-    output_file = file_out(here::here("reports/analysis_report.html")),
+  ms = rmarkdown::render(
+    knitr_in(here::here("manuscript/japan_ferns_diversity_ms.Rmd")),
+    output_file = file_out(here::here("manuscript/japan_ferns_diversity_ms.docx")),
     quiet = TRUE)
 )
