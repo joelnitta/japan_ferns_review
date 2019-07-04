@@ -69,6 +69,9 @@ plan <- drake_plan (
   
   # Analyze basic statistics ----
   
+  # Make taxonomic data table for all pteridophytes.
+  taxonomic_data = summarize_taxonomy(repro_data, occ_data_pteridos),
+  
   # Count species per grid cell excluding hybrids.
   species_per_cell = count_species_per_cell(occ_data_pteridos, repro_data),
   

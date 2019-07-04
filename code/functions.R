@@ -43,7 +43,8 @@ count_species_per_cell <- function (occ_data, repro_data) {
   occ_data %>%
     filter(taxon_id %in% repro_data$taxon_id) %>%
     group_by(secondary_grid_code) %>%
-    count(sort = TRUE)
+    count(sort = TRUE) %>%
+    ungroup
 }
 
 #' Count grid cells per species
@@ -54,7 +55,8 @@ count_species_per_cell <- function (occ_data, repro_data) {
 count_cells_per_species <- function (occ_data) {
   occ_data %>%
     group_by(taxon_name) %>%
-    count(sort = TRUE)
+    count(sort = TRUE) %>%
+    ungroup
 }
 
 #' Count number of grid cells per species by reproductive mode
@@ -176,6 +178,47 @@ add_taxonomy <- function(occ_data, taxonomy_data) {
     mutate(genus = str_split(taxon_name, " ") %>% map_chr(1)) %>%
     filter(!is.na(genus)) %>%
     left_join(taxonomy_data)
+}
+
+#' Summarize taxonomic data
+#'
+#' @param repro_data Reproductive mode data, with
+#' one row per taxon, excluding hybrids.
+#' @param occ_data_with_taxonomy Occurrence data, with one row per
+#' grid cell per taxon, including hybrids. Should already have
+#' higher-level taxonomy (genus, family, etc) included.
+#' 
+#' @return tibble: one row per taxon with higher level taxonomy.
+summarize_taxonomy <- function(repro_data, occ_data_with_taxonomy) {
+  
+  # Just get relevant parts of taxonomic data for joining to repro data
+  occ_data_with_taxonomy <-
+  select(occ_data_with_taxonomy, 
+         taxon_id, taxon_name, 
+         genus, family, order, class) %>% unique
+  
+  taxonomic_data <- left_join(repro_data, occ_data_with_taxonomy) %>%
+    # Add column for lowest taxonomic rank
+    mutate(lowest_taxonomic_rank = case_when(
+      str_detect(taxon_name, "var\\.") ~ "infraspecies",
+      str_detect(taxon_name, "subsp\\.") ~ "infraspecies",
+      TRUE ~ "species"
+    )) %>%
+    # Add column for species (without infra sp. taxon)
+    mutate(species_name = str_split(taxon_name, " ") %>% 
+             map_chr(., ~magrittr::extract(., 1:2) %>% jntools::paste3(collapse = " ")))
+  
+  # Double check that our assessment of species vs infraspecies was correct:
+  # all "species" should have exactly one space in their name
+  assert_that(
+    taxonomic_data %>% 
+      filter(lowest_taxonomic_rank == "species") %>%
+      pull(taxon_name) %>%
+      map_dbl(~str_count(., " ")) %>%
+      unique == 1
+  )
+  
+  return(taxonomic_data)
 }
 
 # Breeding system ----
