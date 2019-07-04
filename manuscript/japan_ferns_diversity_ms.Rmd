@@ -6,12 +6,19 @@ output: word_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE, eval = TRUE, cache = TRUE, results = "hide")
 
+# Load packages not used in main plan
+library(glue)
+
 # Load targets made from plan
 loadd(taxonomic_data)
 loadd(ppgi)
 loadd(all_cells)
 loadd(occ_data_pteridos)
+loadd(repro_data)
+loadd(japan_pterido_tree)
 
+# Function for rounding with trailing zeros
+round_t <- function (x, digits) round(x, digits) %>% sprintf(glue::glue("%.{digits}f"), .)
 ```
 
 An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago
@@ -95,9 +102,32 @@ Eight volumes of "Illustrations of Pteridophytes of Japan" (Kurata and Nakaike, 
 Even not included in present dataset, much larger number of specimen data without images are available on-line via Science Museum Net (http://science-net.kahaku.go.jp/) which is a portal of natural history specimens deposited in museums in Japan, and the occurrence data are also searchable in the GBIF data portal (https://www.gbif.org/). As of May 23, 2019, Japan is the country of locality with the largest number of fern and lycophyte specimens in GBIF, totally 531311 occurrences.
 In the summary of species richness in 10 km-grids excluding nothotaxa (Fig. 1a), the grids with the highest (`r highest_richness_cell_n_taxa` taxa, grid code: `r highest_richness_cell`) and the second highest diversity (`r highest_richness_cell_n_taxa_2` taxa, grid code: `r highest_richness_cell_2`) are found in the mountain area of Yakushima Island, located south of Kyushu including the island’s highest peak (Mt. Miyanoura, 1936 m in elevation). The third highest grid (`r highest_richness_cell_n_taxa_3` taxa, grid code `r highest_richness_cell_3`) is located in the area covering Nachi-no-taki Falls in southern part of Wakayama Prefecture, southern Honshu.
 
-By adding phylogenetic information, we are able to overview the diversity distribution patterns by a different measure from species number. We updated the rbcL sequence dataset to cover 97.8 % of the native taxa by making several additions and corrections to that prepared by Ebihara et al. (2010) (Electronic supplementary material 1), and then Phylogenetic Diversity (PD, “the minimum total length of all the phylogenetic branches required to span a given set of taxa on the phylogenetic tree”, Faith 1992, 2006) on a tree for every grid was calculated using Phylogenetic Diversity Analyzer ver. 1.0.3 (Chernomor et al. 2015). In the analysis with a dataset covering all ferns and lycophyte taxa considering the tree unrooted (Fig. 1b), the highest PD value was obtained in a grid in Wakayama Prefecture (grid code: 503547), the second highest one in the northern part of the Okinawa Island (grid code: 402801) and third largest one in Iriomote Island (grid code: 362346) located in the southwesternmost part of the Archipelago. These rankings were not significantly changed when we analyzed a dataset with only fern occurrences rooted by a lycophyte (Lycopodium clavatum var. nipponicum) (Fig. 1c). In the result of PD analyses, the Yakushima grid (grid code: 453034) with maximum species richness was ranked 12th in the PD analysis using ferns+lycophytes, and 10th in that only using ferns, respectively. The disparity of the results might suggest the difference in their constituent species – species richness in Yakushima Island is resulted from presence of some species rich genera (e.g. 19 taxa of Dryopteris, 16 taxa of Diplazium, 14 taxa of Athyrium).
+```{r pd-analysis-numbers}
+loadd(japan_pterido_tree)
+loadd(pd_pteridos)
+loadd(pd_ferns)
+pd_ferns <- arrange(pd_ferns, desc(pd_obs))
+pd_pteridos <- arrange(pd_pteridos, desc(pd_obs))
+```
+By adding phylogenetic information, we are able to overview the diversity distribution patterns by a different measure from species number. We updated the rbcL sequence dataset to cover `r percent(Ntip(japan_pterido_tree)/nrow(repro_data))` of the native taxa by making several additions and corrections to that prepared by Ebihara et al. (2010) (Electronic supplementary material 1). We then calculated Phylogenetic Diversity (PD; Faith 1992, 2006) for each grid cell by trimming the tree to only taxa present in the cell and summing the branchlengths (excluding the root). In the analysis with a dataset covering all ferns and lycophyte taxa (Fig. 1b), the highest PD value was obtained in a grid in Wakayama Prefecture (grid code: `r pd_pteridos$site[1]`), the second highest in the northern part of the Okinawa Island (grid code: `r pd_pteridos$site[2]`) and third highest in Iriomote Island (grid code: `r pd_pteridos$site[3]`) located in the southwesternmost part of the archipelago. These rankings were not significantly changed when we analyzed a dataset with only fern occurrences rooted by a lycophyte (Lycopodium clavatum var. nipponicum) (Fig. 1c). In the result of PD analyses, the Yakushima grid (grid code: 453034) with maximum species richness was ranked `r which(pd_pteridos$site == "453034")`th in the PD analysis using ferns+lycophytes, and `r which(pd_ferns$site == "453034")`th in that only using ferns, respectively. The disparity of the results might suggest the difference in their constituent species – species richness in Yakushima Island is resulted from presence of some species rich genera (e.g. 19 taxa of Dryopteris, 16 taxa of Diplazium, 14 taxa of Athyrium).
 
-Our updated occurrence data supported the trend that species with seasonal-green phenology showed wider distribution than evergreen species suggested by Guo et al. (2003), but it is probably an artifact caused by small land areas at lower altitudes in the country where evergreen species dominate. Guo et al. (2003) also suggested species with multiple reproductive modes showed wider distribution areas than species with a single reproductive mode. However, our data did not support this trend (mean numbers of grids, sex.+apo. = 356.63 (n = 8), sex. = 367.01 (n = 413), apo. = 314.59 (n = 79), none of the combination differs significantly in paired t-test) – the result seems to be strongly affected by species circumscription and presumably some “species with multiple reproductive modes” in Guo et al. (2003) are separated into multiple taxa with each single mode in present treatment. Even though their distribution area sizes are not significantly different, apomictic taxa show significantly narrower latitudinal range than sexual ones (mean degree of ranges: sex. = 7.73 and apo. 6.01, p < 0.001 in paired t-test), and it coincides with the result by Tanaka et al. (2014) that represented smaller range sizes of apomicitic ones both in latitude and elevation. Also the southerly distribution phenomenon of apomicitic species which was presumed a result of poor cold-hardiness of gametophytes of apomictic species having larger cell sizes (Tanaka et al. 2014), was confirmed in present data (Fig. 1d, e). The trend that narrower distribution of polyploid taxa (Guo et al. 2003) is not supported by present data excluding apomictic species (average number of grids, sexual diploid = 337.14, sexual polyploid = 370.51) – the trend probably came out by narrower distribution of apomictic species which are dominated by triploid.
+```{r sex-numbers}
+loadd(cps_by_repro_means)
+loadd(cps_by_repro_model_summary)
+
+# Format means for printing inline
+cps_by_repro_means_inline <- 
+  cps_by_repro_means %>%
+  rename(repro = reproductive_mode) %>%
+  mutate(mean_grids = round_t(mean_grids, 1)) %>%
+  mutate(
+    stat = glue("{mean_grids} (*n* = {n})")
+  )
+
+```
+
+
+Our updated occurrence data supported the trend that species with seasonal-green phenology showed wider distribution than evergreen species suggested by Guo et al. (2003), but it is probably an artifact caused by small land areas at lower altitudes in the country where evergreen species dominate. Guo et al. (2003) also suggested species with multiple reproductive modes showed wider distribution areas than species with a single reproductive mode. However, our data did not support this trend (mean numbers of grids, sex.+apo. = `r cps_by_repro_means_inline %>% filter(repro == "sex_apo") %>% pull(stat)`, sex. = `r cps_by_repro_means_inline %>% filter(repro == "sexual") %>% pull(stat)`, apo. = `r cps_by_repro_means_inline %>% filter(repro == "apomictic") %>% pull(stat)`, none of the combination differs significantly; analysis of variance, *p* = `r cps_by_repro_model_summary %>% filter(term == "reproductive_mode") %>% pull(p.value) %>% round_t(2)`) – the result seems to be strongly affected by species circumscription and presumably some “species with multiple reproductive modes” in Guo et al. (2003) are separated into multiple taxa with each single mode in present treatment. Even though their distribution area sizes are not significantly different, apomictic taxa show significantly narrower latitudinal range than sexual ones (mean degree of ranges: sex. = 7.73 and apo. 6.01, p < 0.001 in paired t-test), and it coincides with the result by Tanaka et al. (2014) that represented smaller range sizes of apomicitic ones both in latitude and elevation. Also the southerly distribution phenomenon of apomicitic species which was presumed a result of poor cold-hardiness of gametophytes of apomictic species having larger cell sizes (Tanaka et al. 2014), was confirmed in present data (Fig. 1d, e). The trend that narrower distribution of polyploid taxa (Guo et al. 2003) is not supported by present data excluding apomictic species (average number of grids, sexual diploid = 337.14, sexual polyploid = 370.51) – the trend probably came out by narrower distribution of apomictic species which are dominated by triploid.
 
 ## Cytotaxonomic data
 
