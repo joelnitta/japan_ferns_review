@@ -86,9 +86,9 @@ avg_cells_per_species_by_repro <- function (cells_per_species_by_repro) {
   cells_per_species_by_repro %>%
     group_by(reproductive_mode) %>%
     summarize(
-      mean_grids = mean(n_grids),
+      mean = mean(n_grids, na.rm = TRUE),
       n = n(),
-      sd = sd(n_grids)
+      sd = sd(n_grids, na.rm = TRUE)
     )
 }
 
@@ -123,9 +123,9 @@ avg_lat_by_repro <- function(lat_by_repro) {
   lat_by_repro %>%
     group_by(reproductive_mode) %>%
     summarize(
-      lat_breadth = mean(lat_breadth),
+      mean = mean(lat_breadth, na.rm = TRUE),
       n = n(),
-      sd = sd(lat_breadth)
+      sd = sd(lat_breadth, na.rm = TRUE)
     )
 }
 

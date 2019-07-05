@@ -114,20 +114,30 @@ By adding phylogenetic information, we are able to overview the diversity distri
 ```{r sex-numbers}
 loadd(cps_by_repro_means)
 loadd(cps_by_repro_model_summary)
+loadd(lat_by_repro_means)
+loadd(lat_by_repro_tukey)
 
 # Format means for printing inline
 cps_by_repro_means_inline <- 
   cps_by_repro_means %>%
   rename(repro = reproductive_mode) %>%
-  mutate(mean_grids = round_t(mean_grids, 1)) %>%
+  mutate_at(vars(mean, sd), ~round_t(., 1)) %>%
   mutate(
-    stat = glue("{mean_grids} (*n* = {n})")
+    stat = glue("{mean} ± {sd} (*n* = {n})")
+  )
+
+lat_by_repro_means_inline <-
+  lat_by_repro_means %>%
+  rename(repro = reproductive_mode) %>%
+  mutate_at(vars(mean, sd), ~round_t(., 2)) %>%
+  mutate(
+    stat = glue("{mean} ± {sd} (*n* = {n})")
   )
 
 ```
 
 
-Our updated occurrence data supported the trend that species with seasonal-green phenology showed wider distribution than evergreen species suggested by Guo et al. (2003), but it is probably an artifact caused by small land areas at lower altitudes in the country where evergreen species dominate. Guo et al. (2003) also suggested species with multiple reproductive modes showed wider distribution areas than species with a single reproductive mode. However, our data did not support this trend (mean numbers of grids, sex.+apo. = `r cps_by_repro_means_inline %>% filter(repro == "sex_apo") %>% pull(stat)`, sex. = `r cps_by_repro_means_inline %>% filter(repro == "sexual") %>% pull(stat)`, apo. = `r cps_by_repro_means_inline %>% filter(repro == "apomictic") %>% pull(stat)`, none of the combination differs significantly; analysis of variance, *p* = `r cps_by_repro_model_summary %>% filter(term == "reproductive_mode") %>% pull(p.value) %>% round_t(2)`) – the result seems to be strongly affected by species circumscription and presumably some “species with multiple reproductive modes” in Guo et al. (2003) are separated into multiple taxa with each single mode in present treatment. Even though their distribution area sizes are not significantly different, apomictic taxa show significantly narrower latitudinal range than sexual ones (mean degree of ranges: sex. = 7.73 and apo. 6.01, p < 0.001 in paired t-test), and it coincides with the result by Tanaka et al. (2014) that represented smaller range sizes of apomicitic ones both in latitude and elevation. Also the southerly distribution phenomenon of apomicitic species which was presumed a result of poor cold-hardiness of gametophytes of apomictic species having larger cell sizes (Tanaka et al. 2014), was confirmed in present data (Fig. 1d, e). The trend that narrower distribution of polyploid taxa (Guo et al. 2003) is not supported by present data excluding apomictic species (average number of grids, sexual diploid = 337.14, sexual polyploid = 370.51) – the trend probably came out by narrower distribution of apomictic species which are dominated by triploid.
+Our updated occurrence data supported the trend that species with seasonal-green phenology showed wider distribution than evergreen species suggested by Guo et al. (2003), but it is probably an artifact caused by small land areas at lower altitudes in the country where evergreen species dominate. Guo et al. (2003) also suggested species with multiple reproductive modes showed wider distribution areas than species with a single reproductive mode. However, our data did not support this trend (mean numbers of grids, sex.+apo. = `r cps_by_repro_means_inline %>% filter(repro == "sex_apo") %>% pull(stat)`, sex. = `r cps_by_repro_means_inline %>% filter(repro == "sexual") %>% pull(stat)`, apo. = `r cps_by_repro_means_inline %>% filter(repro == "apomictic") %>% pull(stat)`, none of the combination differs significantly; analysis of variance, *p* = `r cps_by_repro_model_summary %>% filter(term == "reproductive_mode") %>% pull(p.value) %>% round_t(2)`) – the result seems to be strongly affected by species circumscription and presumably some “species with multiple reproductive modes” in Guo et al. (2003) are separated into multiple taxa with each single mode in present treatment. Even though their distribution area sizes are not significantly different, apomictic taxa show significantly narrower latitudinal range than sexual ones (mean degree of ranges: sex. = `r lat_by_repro_means_inline %>% filter(repro == "sexual") %>% pull(stat)` and apo. `r lat_by_repro_means_inline %>% filter(repro == "apomictic") %>% pull(stat)`, *p* = `r lat_by_repro_tukey %>% filter(comparison == "sexual-apomictic") %>% pull(adj.p.value) %>% round_t(3)`; Tukey's HSD), and it coincides with the result by Tanaka et al. (2014) that represented smaller range sizes of apomicitic ones both in latitude and elevation. Also the southerly distribution phenomenon of apomicitic species which was presumed a result of poor cold-hardiness of gametophytes of apomictic species having larger cell sizes (Tanaka et al. 2014), was confirmed in present data (Fig. 1d, e). The trend that narrower distribution of polyploid taxa (Guo et al. 2003) is not supported by present data excluding apomictic species (average number of grids, sexual diploid = 337.14, sexual polyploid = 370.51) – the trend probably came out by narrower distribution of apomictic species which are dominated by triploid.
 
 ## Cytotaxonomic data
 
