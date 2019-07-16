@@ -384,9 +384,6 @@ Shrestha N, Zhang XC (2015) Recircumscription of *Huperzia* *serrata*
 complex in China using morphological and climatic data. J Syst Evol
 53:88-103
 
-Sigel EM (2016) Genetic and genomic aspects of hybridization in ferns.
-J Syst Evol 54:638-655
-
 Suzuki T, Watanabe I, Shiraiwa T (2005) Allozyme types of water fern
 *Azolla* *japonica* and its relatives (Azollaceae) growing in Japan.
 Acta Phytotax Geobot 56:71-83
