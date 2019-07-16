@@ -88,6 +88,16 @@ plan <- drake_plan (
     cps_by_repro
   ),
   
+  # Count CPS by ploidy level.
+  cps_by_ploidy = count_cells_per_species_by_ploidy(
+    occ_data_pteridos, repro_data
+  ),
+  
+  # Calculate mean CPS by ploidy level.
+  cps_by_ploidy_means = avg_cells_per_species_by_ploidy(
+    cps_by_ploidy
+  ),
+  
   # Run analysis of variance (AOV) on CPS by reproductive mode.
   cps_by_repro_model_summary = aov(
     n_grids ~ reproductive_mode, 

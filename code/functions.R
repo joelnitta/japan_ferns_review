@@ -77,9 +77,27 @@ count_cells_per_species_by_repro <- function(occ_data, repro_data) {
     filter(reproductive_mode != "unknown")
 }
 
+#' Count number of grid cells per species by ploidy level
+#' 
+#'
+#' @param occ_data Occurrence data, with one row per
+#' grid cell per taxon, including hybrids.
+#' @param repro_data Reproductive mode mata, with
+#' one row per taxon, excluding hybrids.
+#' @return tibble
+count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
+  occ_data %>%
+    group_by(taxon_id) %>%
+    summarize(
+      n_grids = n()
+    ) %>%
+    inner_join(select(repro_data, taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid)) %>%
+    ungroup()
+}
+
 #' Get mean number of grid cells per species by reproductive mode
 #'
-#' @param cells_per_species_by_repro 
+#' @param cells_per_species_by_repro Tibble
 #'
 #' @return Tibble
 avg_cells_per_species_by_repro <- function (cells_per_species_by_repro) {
@@ -90,6 +108,32 @@ avg_cells_per_species_by_repro <- function (cells_per_species_by_repro) {
       n = n(),
       sd = sd(n_grids, na.rm = TRUE)
     )
+}
+
+#' Get mean number of grid cells per species by ploidy level
+#'
+#' @param cells_per_species_by_ploidy Tibble 
+#'
+#' @return Tibble
+avg_cells_per_species_by_ploidy <- function (cells_per_species_by_repro) {
+  bind_rows(
+    cells_per_species_by_repro %>%
+    filter(reproductive_mode == "sexual") %>%
+    group_by(sexual_diploid) %>%
+    summarize(
+      mean = mean(n_grids, na.rm = TRUE),
+      n = n(),
+      sd = sd(n_grids, na.rm = TRUE)
+    ),
+    cells_per_species_by_repro %>%
+      filter(reproductive_mode == "sexual") %>%
+      group_by(sexual_polyploid) %>%
+      summarize(
+        mean = mean(n_grids, na.rm = TRUE),
+        n = n(),
+        sd = sd(n_grids, na.rm = TRUE)
+      ),
+  )
 }
 
 #' Determine latitudinal breadth for each species,
