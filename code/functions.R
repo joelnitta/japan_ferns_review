@@ -312,16 +312,18 @@ calc_percent_apomictic <- function (occ_data, repro_data, all_cells) {
 #'
 #' @param occ_data Occurrence data, where each row is the 
 #' occurrence of a species in a grid cell
+#' @param all_cells Dataframe with long/lat of all 10km2 grid
+#' cells across Japan
 #' @return tibble
-make_richness_matrix <- function (occ_data) {
+make_richness_matrix <- function (occ_data, all_cells) {
   occ_data %>%
     group_by(secondary_grid_code) %>%
     summarize(
       richness = n()
     ) %>%
-    left_join(
-      select(occ_data, latitude, longitude, secondary_grid_code) %>% unique
-    )
+    # Add all cells, including those missing from occ_data
+    right_join(all_cells) %>%
+    mutate(richness = replace_na(richness, 0))
 }
 
 
@@ -424,8 +426,8 @@ calc_pd_comm <- function (comm, phy) {
   
   # Nest by community, then calculate PD for each
   comm %>%
-    gather(site, abundance, -species) %>%
-    nest(-site) %>%
+    gather(secondary_grid_code, abundance, -species) %>%
+    nest(-secondary_grid_code) %>%
     mutate(
       pd_obs = map_dbl(data, ~ calc_pd(., phy = phy))
     ) %>%
@@ -523,15 +525,6 @@ get_limit <- function (data, var, type = c("min", "max", "abs"), digits = 2) {
   
 }
 
-#' Make a plot showing species richness on a map of Japan
-#'
-#' @param richness Species richness in 1km grid cells, 
-#' with longitude and latitude
-#' @param occ_data Occurrence data used to generate species richness matrix
-#' @param world_map Background world map
-#'
-#' @return ggplot object
-
 #' Make a plot showing selected alpha diversity metric on a map of Japan
 #'
 #' @param div_data Alpha diversity matrix; rows are communities
@@ -560,7 +553,6 @@ make_diversity_map <- function (div_data, world_map, occ_data, div_metric, metri
       ylim = c(pull(occ_data, latitude) %>% min %>% floor, 
                pull(occ_data, latitude) %>% max %>% ceiling)
     ) +
-    # scale_fill_viridis_c(na.value="transparent") +
     jntools::blank_x_theme() +
     jntools::blank_y_theme() +
     theme(
