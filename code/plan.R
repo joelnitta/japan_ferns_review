@@ -169,12 +169,14 @@ plan <- drake_plan (
   pd_ferns = calc_pd_comm(comm_ferns, japan_fern_tree),
   
   # Calculate percentage of apomictic ferns ----
+  # percentage is out of all species that are in both
+  # occurrence data and reproductive data, so excludes hybrids.
   # Set 0s to NA for plotting on log-scale
   percent_apomictic_ferns = calc_percent_apomictic(
     occ_data_ferns,
     repro_data,
     all_cells
-  )  ,
+  ),
   
   # Combine richness and PD metrics for plotting
   alpha_diversity_pteridos = left_join(
