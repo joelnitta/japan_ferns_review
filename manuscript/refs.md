@@ -339,6 +339,9 @@ field-collected terrestrial cordate gametophytes of pre-polypod
 leptosporangiate ferns (Osmundaceae, Gleicheniaceae, Plagiogyriaceae,
 Cyatheaceae). Mycorrhiza 26:87-97
 
+Ogura-Tsujita, Y, Yamamoto K, Hirayama Y, Ebihara A, Morita N, Imaichi R. (2019) 
+Fern gametophytes of *Angiopteris lygodiifolia* and *Osmunda japonica* harbor diverse Mucoromycotina fungi. J Plant Res https://doi.org/10.1007/s10265-019-01121-x
+
 Ohta N, Takamiya M (1999) Taxonomic studies of the *Diplazium*
 *mettenianum* complex (Woodsiaceae; Pteridophyta) in Japan:
 Morphology, cytology and taxonomy of plants with normal-shaped spores.
