@@ -15,6 +15,7 @@ loadd(cells_per_species)
 loadd(cps_by_ploidy_means)
 loadd(cps_by_repro_means)
 loadd(cps_by_repro_model_summary)
+loadd(green_list)
 loadd(japan_pterido_tree)
 loadd(lat_by_repro_means)
 loadd(lat_by_repro_tukey)
@@ -160,7 +161,25 @@ Even today, chromosome numbers of ferns and lycophytes which are important clues
 
 ## Threatened species
 
-Latest national red list of Japan (Ministry of the Environment, Japan 2019) included more than one third of the native fern and lycophyte taxa (260 in total, 6 EX, 3 EW, 85 CR, 59 EN, 68 VU, 38 NT and 1 DD; see Fig. 1f for the distribution of richness). The largest threat for ferns is herbivory of the sika deer distributed throughout the archipelago which obviously increased after 1980’s (Takatsuki 2009). In particular, species growing on the forest floor (e.g. Athyrium, Terada and Takamiya 2006) undergo severe damage, and several narrowly distributed species in Kyushu and Yakushima Island became almost extinct or only found inside deer fences. Although national law for endangered species is recently expanding objective fern and lycophyte species which are proscribed collection and sellout (28 species as of May 2019), it is apparently not directly effective for preventing herbivory of deer. There are still a few reports of conservation activities and researches on ferns and lycophytes in Japan: ubiquitous genotyping of Athyrium viridescentipes (Izuno et al. 2012) and clarifying origin and propagation from spore in Dryopteris shibipedis (Ebihara et al. 2012) which was extinct in the wild. Despite 70 of the 260 taxa in the latest national red list are endemic species to Japan, they are neither assessed nor listed in the IUCN Red List as globally threatened species as of May 2019 (IUCN 2019).
+```{r threatened-species-numbers}
+# Make vector of number of endangered taxa by conservation status type
+red_nums <-
+green_list %>%
+  filter(!is.na(conservation_status)) %>%
+  count(conservation_status) %>%
+  mutate(n = set_names(n, conservation_status)) %>%
+  pull(n)
+
+# Get number of endemic threatened taxxa
+n_endemic_threatened <-
+green_list %>% 
+  filter(!is.na(endemic)) %>%
+  filter(!is.na(conservation_status)) %>%
+  pull(taxon_id) %>%
+  n_distinct()
+```
+
+The latest national red list of Japan (Ministry of the Environment, Japan 2019) included more than one-third of the native fern and lycophyte taxa (`r sum(red_nums)` in total, `r red_nums[["EX"]]` EX, `r red_nums[["EW"]]` EW, `r red_nums[["CR"]]` CR, `r red_nums[["EN"]]` EN, `r red_nums[["VU"]]` VU, `r red_nums[["NT"]]` NT and `r red_nums[["DD"]]` DD; see Fig. 1f for the distribution of richness). The largest threat for ferns is herbivory by sika deer (*Cervus nippon*) throughout the archipelago, which has clearly increased since the 1980s (Takatsuki 2009). In particular, species growing on the forest floor (e.g., *Athyrium*, Terada and Takamiya 2006) undergo severe damage, and several narrowly distributed species in Kyushu and Yakushima Island have become almost extinct or are only found inside deer fences. Although the national law for endangered species has recently expanded the number of fern and lycophyte species which are prohibited for collection and sale (28 species as of May 2019), this is not effective for preventing herbivory by deer. There are still only a few reports on conservation of ferns and lycophytes in Japan: ubiquitous genotyping of *Athyrium viridescentipes* (Izuno et al. 2012), and clarification on the origin and propagation from spores of *Dryopteris shibipedis* (Ebihara et al. 2012), which was extinct in the wild. Despite that `r n_endemic_threatened` of the `r sum(red_nums)` taxa in the latest national red list are endemic species to Japan, they are neither assessed nor listed in the IUCN Red List as globally threatened species as of May 2019 (IUCN 2019).
 
 ## Introduced species
 
