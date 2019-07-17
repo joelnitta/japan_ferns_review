@@ -8,5 +8,6 @@ drafts/
 *.docx
 *.doc
 *.html
+*.pdf
 .drake
 *_cache/
