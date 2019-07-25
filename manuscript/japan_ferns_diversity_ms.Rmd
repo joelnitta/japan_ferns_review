@@ -34,13 +34,52 @@ loadd(taxonomic_data)
 round_t <- function (x, digits) round(x, digits) %>% sprintf(glue::glue("%.{digits}f"), .)
 ```
 
-An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago
+<!-- to move to the next line without starting a new paragraph, 
+add two spaces after last word, e.g., Atsushi Ebihara__ -->
+**Corresponding author**  
+Atsushi Ebihara  
+Department of Botany, National Museum of Nature and Science, 4-1-1 Amakubo, Tsukuba-shi, Ibaraki, 305-0005, Japan  
+Phone: +81-29-853-8988  
+Fax: +81-29-853-8401  
+ebihara@kahaku.go.jp
 
-Atsushi Ebihara & Joel H. Nitta
+**Membership of the Botanical Society of Japan**  
+YES (Atsushi Ebihara & Joel H. Nitta)
+
+**Subject area**  
+(1)	Taxonomy/Phylogenetics/Evolutionary Biology
+
+**Number of tables, black-and-white figures, and color figures.**  
+No tables / no black-and-white figures / 1 color figure
+
+<!-- See https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown/40474753
+for inserting page breaks when rendering to MS word -->
+#####
+
+# An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago
+
+Atsushi Ebihara^1^ & Joel H. Nitta^2^
+
+^1^Departmento of Botany, National Museum of Nature and Science, 4-1-1 Amakubo, Tsukuba 305-0005, Japan  
+ebihara@kahaku.go.jp
+
+^2^Department of Botany, National Museum of Natural History, Smithsonian Institute, Washington, D.C., 20013, U.S.A.
+
+#####
+
+## Abstract
+
+The fern and lycophyte flora of Japan comprising 721 native taxa (including subspecies and varieties) plus 371 combinations of interspecific hybrids was reassessed using a nearly comprehensively sampled distribution map at 10 km^2^ resolution vouchered by 216,687 specimens, up-to-date cytotaxonomic information covering 74 % of the taxa, and an *rbcL* sequence dataset covering 97.9 % of the taxa. Distribution of diversity was visualized by species richness and phylogenetic diversity. Apomixis was observed in 11.0 % of the native taxa whose reproductive modes are known. The number of sexually reproducing polyploid taxa (*n* = 199) is less than sexual diploids (*n* = 241), and 30 of them are evidently allopolyploid, in contrast with the low number of possible autopolyploids (*n* = 4). A morphological character dataset in Lucid format is provided for taxonomic identification of the native taxa.
+
+## Keywords
+
+interactive keys, occurrence data, phylogenetic diversity, species richness
+
+#####
 
 ## Introduction
 
-Ferns and lycophytes, also traditionally known as ‘pteridophytes’, have received strong attention as biological research material. Although there are only estimated to be 11,916 extant species of ferns and lycophytes (Pteridophyte Phylogeny Group, 2016)---much less than the number of seed plant species (approximately one twelfth)---the number of studies on ferns and lycophytes, especially in the field of systematics and evolution, is relatively large. Thus, ferns and lycophytes are relatively information-rich organisms, especially for biodiversity. However, examples of analyses of fern diversity patterns at the regional scale are scarce (e.g. Bogonovich et al. 2014, Mountier et al. 2018). In the last century, the diversity of ferns and lycophytes in Japan was quite thoroughly studied, and is probably the third best studied area after Europe and North America. Guo et al. (2003) combined trait and distrubtion data to analyze determinants of species diversity, abundance, and distribution of the pteridophyte flora of Japan. The sole serious problem of the analyses of Guo et al. (2003) was the lack of phylogenetic information at that time, but DNA sequence data for nearly all ferns and lycophytes of Japan (at least for the cholorplast) have been produced by subsequent studies (Ebihara 2011, Ebihara et al. 2010). In addition, it should be noted that the occurrence data based on Kurata and Nakaike (1979, 1981, 1983, 1985, 1987, 1990, 1994, 1997) used by Guo et al. (2003) did not cover all known species at the time, and more have been revised or added since. <!-- Check that Guo et al. didn't include all species *at the time*-->
+Ferns and lycophytes, also traditionally known as ‘pteridophytes’, have received strong attention as biological research material. Although there are only estimated to be 11,916 extant species of ferns and lycophytes (Pteridophyte Phylogeny Group 2016)---much less than the number of seed plant species (approximately one twelfth)---the number of studies on ferns and lycophytes, especially in the field of systematics and evolution, is relatively large. Thus, ferns and lycophytes are relatively information-rich organisms, especially for biodiversity. However, examples of analyses of fern diversity patterns at the regional scale are scarce (e.g. Bogonovich et al. 2014, Mountier et al. 2018). Over the past century, the diversity of ferns and lycophytes in Japan was quite thoroughly studied, and is probably the third best studied area after Europe and North America. Guo et al. (2003) combined trait and occurrence data to analyze determinants of species diversity, abundance, and distribution of the pteridophyte flora of Japan. The sole serious problem of the analyses of Guo et al. (2003) was the lack of phylogenetic information at that time, but DNA sequence data for nearly all ferns and lycophytes of Japan (at least for the cholroplast) have been produced by subsequent studies (Ebihara 2011, Ebihara et al. 2010). In addition, it should be noted that the occurrence data based on Kurata and Nakaike (1979, 1981, 1983, 1985, 1987, 1990, 1994, 1997) used by Guo et al. (2003) did not cover all known species at the time, and more have been revised or added since. <!-- Check that Guo et al. didn't include all species *at the time*-->
 Ebihara (2016, 2017) provided updated distribution maps for all the native taxa of ferns and lycophytes in Japan reflecting numerous new occurrences and recircumscription of taxa based on the results of recent studies, but did not make the data available online. In the current study, we make available the most recent diversity datasets on ferns and lycophytes in Japan, review recent progress and outstanding questions in documenting this flora, and reassess the results of Guo et al. (2003). 
 
 ## Flora
@@ -56,7 +95,7 @@ n_families <- taxonomic_data %>% pull(family) %>% n_distinct
 assert_that(ppgi %>% pull(family) %>% n_distinct == 51)
 ```
 
-Study on the fern and lycophyte flora of the Japanese Archipelago began with 44 species enumerated in Thunberg (1786)’s “Flora Japonica”. Thereafter the number of recognized native taxa has been gradually increasing: 460 species including subspecies and varieties (Makino and Nemoto 1925), ca. 400 species excluding those in Ogasawara (Bonin) and Ryukyu Islands (Tagawa 1959), and 630 species (Iwatsuki 1995). The latest checklist of native taxa of Japan, which we use in this study, is the ‘FernGreenList ver. 1.01’ (in Japanese; Ebihara et al. 2017a). It comprises `r n_species` species (`r n_taxa` taxa including subspecies and varieties; hereafter called ‘taxa’) belonging to `r n_families` of the 51 families accepted in PPGI (Pteridophyte Phylogeny Group 2016) [Electronic supplementary material 1]. As almost no uninvestigated area remains in the archipelago, most of the new additions to the flora after the 1990s have been newly segregated species from previously known ones based on evidence from ploidy levels, enzyme analyses and/or DNA sequences (e.g., Ebihara et al. 2019a, Fujiwara et al. 2018, Hori et al. 2015, 2018a, 2018c, Lin et al. 1994, 1996, Masuyama and Watano 2010, Murakami et al. 1999, Ohta and Takamiya 1999, Serizawa 2015, Takamiya et al. 1997) along with only a small number of new records (Ebihara et al. 2014, 2019a). The number of taxa in Japan is nearly identical to that in Taiwan (721 taxa excluding forms and hybrids, Knapp 2014). The area of strongest floristic affinity is continental China, with which Japan shares 487 taxa (67.5%), almost corresponding to two-thirds of the native taxa in Japan (Ebihara 2016, 2017). The most recent information as of writing identified 125 endemic taxa (17.3% of the native taxa) to Japan (Ebihara 2018). 
+Study on the fern and lycophyte flora of the Japanese Archipelago began with 44 species enumerated in Thunberg (1786)’s “Flora Japonica”. Thereafter the number of recognized native taxa has been gradually increasing: 460 species including subspecies and varieties (Makino and Nemoto 1925), ca. 400 species excluding those in Ogasawara (Bonin) and Ryukyu Islands (Tagawa 1959), and 630 species (Iwatsuki et al. 1995). The latest checklist of native taxa of Japan, which we use in this study, is the ‘FernGreenList ver. 1.01’ (in Japanese; Ebihara et al. 2017a). It comprises `r n_species` species (`r n_taxa` taxa including subspecies and varieties; hereafter called ‘taxa’) belonging to `r n_families` of the 51 families accepted in PPGI (Pteridophyte Phylogeny Group 2016) [Electronic supplementary material 1]. As almost no uninvestigated area remains in the archipelago, most of the new additions to the flora after the 1990s have been newly segregated species from previously known ones based on evidence from ploidy levels, enzyme analyses and/or DNA sequences (e.g., Ebihara et al. 2019a, Fujiwara et al. 2018, Hori et al. 2015, 2018a, 2018c, Lin et al. 1994, 1996, Masuyama and Watano 2010, Murakami et al. 1999, Ohta and Takamiya 1999, Serizawa 2015, Takamiya et al. 1997) along with only a small number of new records (Ebihara et al. 2014, 2019a). The number of taxa in Japan is nearly identical to that in Taiwan (721 taxa excluding forms and hybrids, Knapp 2014). The area of strongest floristic affinity is continental China, with which Japan shares 487 taxa (67.5%), almost corresponding to two-thirds of the native taxa in Japan (Ebihara 2016, 2017). The most recent information as of writing identified 125 endemic taxa (17.3% of the native taxa) to Japan (Ebihara 2018). 
 
 ## Interspecific hybrids
 
