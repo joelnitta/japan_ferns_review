@@ -1,6 +1,7 @@
 ---
-title: "An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago"
-output: word_document
+output: 
+  word_document: 
+    reference_docx: word_template.docx
 ---
 
 ```{r setup, include=FALSE}
