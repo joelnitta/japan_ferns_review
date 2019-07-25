@@ -195,13 +195,9 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
-    metric_title = "No. species") +
-    scale_fill_scico(palette = "bilbao", na.value="white"),
-  
-  fig_1a = ggsave(
-    plot = pterido_richness_map, 
-    filename = file_out(here("manuscript/fig_1a.pdf"))
-    ),
+    metric_title = "No. species",
+    label = "a") +
+    scale_fill_scico(palette = "bamako", na.value="grey"),
   
   # - PD of ferns and lycophytes
   pterido_pd_map = make_diversity_map(
@@ -209,27 +205,19 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
-    metric_title = "Phylogenetic \n diversity") +
-    scale_fill_scico(palette = "bilbao", na.value="white"),
-  
-  fig_1b = ggsave(
-    plot = pterido_pd_map, 
-    filename = file_out(here("manuscript/fig_1b.pdf"))
-  ),
-  
+    metric_title = "Phylogenetic \n diversity",
+    label = "b") +
+    scale_fill_scico(palette = "bamako", na.value="grey"),
+
   # - PD of ferns only
   fern_pd_map = make_diversity_map(
     div_data = alpha_diversity_ferns, 
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
-    metric_title = "Phylogenetic \n diversity") +
-    scale_fill_scico(palette = "bilbao", na.value="white"),
-  
-  fig_1c = ggsave(
-    plot = fern_pd_map, 
-    filename = file_out(here("manuscript/fig_1c.pdf"))
-  ),
+    metric_title = "Phylogenetic \n diversity",
+    label = "c") +
+    scale_fill_scico(palette = "bamako", na.value="grey"),
   
   # - Richness of apomictic ferns
   fern_apo_map = make_diversity_map(
@@ -237,13 +225,9 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
-    metric_title = "No. species") +
-    scale_fill_scico(palette = "bilbao", na.value="white"),
-  
-  fig_1d = ggsave(
-    plot = fern_apo_map, 
-    filename = file_out(here("manuscript/fig_1d.pdf"))
-  ),
+    metric_title = "No. species",
+    label = "d") +
+    scale_fill_scico(palette = "bamako", na.value="grey"),
   
   # - Percent apomictic taxa (on log-scale)
   fern_apo_frac_map = make_diversity_map(
@@ -256,17 +240,13 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "percent_apomictic", 
-    metric_title = "% apomictic") +
+    metric_title = "% apomictic",
+    label = "e") +
     scale_fill_scico(
       name = "% apomictic",
-      palette = "bilbao", na.value="white", 
+      palette = "bamako", na.value="#003F4C", # set NA value to be same color as 0
       trans = "log", breaks = c(6,12,25,50,100)),
-  
-  fig_1e = ggsave(
-    plot = fern_apo_frac_map, 
-    filename = file_out(here("manuscript/fig_1e.pdf"))
-  ),
-  
+
   # - Richness of endangered ferns and lycophytes (on log-scale)
   fern_endangered_map = make_diversity_map(
     # Replace 0 with NA for log-transform
@@ -278,15 +258,26 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
-    metric_title = "No. species") +
+    metric_title = "No. species",
+    label = "f") +
     scale_fill_scico(
-      palette = "bilbao", na.value="white", 
+      palette = "bamako", na.value="#003F4C", # set NA value to be same color as 0
       trans = "log", breaks = c(3,6,12,24,48)),
   
-  fig_1f = ggsave(
-    plot = fern_endangered_map, 
-    filename = file_out(here("manuscript/fig_1f.pdf"))
+  # Combine subplots.
+  fig_1 = patchwork::wrap_plots(
+    list(
+      pterido_richness_map, pterido_pd_map,
+      fern_pd_map, fern_apo_map,
+      fern_apo_frac_map, fern_endangered_map),
+    ncol = 2, nrow = 3
   ),
+  
+  # Write out final plot at full-page size.
+  fig_1_out = ggsave(
+    plot = fig_1, 
+    filename = file_out(here("manuscript/fig_1.pdf")),
+    height = 234, width = 174, units = "mm"),
 
   # Write out manuscript ----
   ms = rmarkdown::render(

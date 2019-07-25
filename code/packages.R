@@ -12,6 +12,7 @@ library(assertr)
 library(scico)
 library(magrittr)
 library(here)
+library(patchwork)
 library(tidyverse)
 
 conflict_prefer("map", "purrr")
