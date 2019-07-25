@@ -195,7 +195,7 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
-    metric_title = "No. species",
+    metric_title = "No. species ",
     label = "a") +
     scale_fill_scico(palette = "bamako", na.value="grey"),
   
@@ -205,7 +205,7 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
-    metric_title = "Phylogenetic \n diversity",
+    metric_title = "Phylo. \n diversity",
     label = "b") +
     scale_fill_scico(palette = "bamako", na.value="grey"),
 
@@ -215,7 +215,7 @@ plan <- drake_plan (
     world_map = world_map, 
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
-    metric_title = "Phylogenetic \n diversity",
+    metric_title = "Phylo. \n diversity",
     label = "c") +
     scale_fill_scico(palette = "bamako", na.value="grey"),
   

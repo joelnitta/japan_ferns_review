@@ -570,7 +570,7 @@ make_diversity_map <- function (div_data, world_map, occ_data, div_metric, metri
       legend.title = element_text(size = 20/.pt),
       legend.text = element_text(size = 16/.pt),
       legend.justification=c(1,0), 
-      legend.position=c(1,0))
+      legend.position=c(1.1,0))
 }
 
 #' Make a plot showing selected SES of PD on map of Japan with
