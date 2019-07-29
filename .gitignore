@@ -12,3 +12,4 @@ drafts/
 .drake
 *_cache/
 tmp
+packrat/lib*/

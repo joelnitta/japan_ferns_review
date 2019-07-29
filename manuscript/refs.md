@@ -308,6 +308,10 @@ speciation of *Cyrtomium* *falcatum* complex (Dryopteridaceae) in
 Japanese Archipelago. Ann Tsukuba Bot Gard 22:1-141 (in Japanese with
 English summary)
 
+Miller MA, Pfeiffer W, Schwartz T (2010) Creating the CIPRES Science Gateway 
+for inference of large phylogenetic trees. Gateway 
+Computing Environments Workshop (GCE), New Orleans
+
 Ministry of the Environment, Japan (2019) Red List of Japan, 2019.
 https://www.env.go.jp/press/106383.html (in Japanese) accessed 21 July
 2019
