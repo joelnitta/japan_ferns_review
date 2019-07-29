@@ -11,3 +11,4 @@ drafts/
 *.pdf
 .drake
 *_cache/
+tmp
