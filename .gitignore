@@ -3,13 +3,15 @@
 .RData
 .Ruserdata
 *.Rproj
+.Rprofile
 data/
 drafts/
 *.docx
 *.doc
 *.html
 *.pdf
-.drake
+.drake*
 *_cache/
 tmp
-packrat/lib*/
+packrat/*
+!packrat/packrat.lock
