@@ -57,9 +57,11 @@ plan <- drake_plan (
     left_join(green_list) %>%
     filter(!is.na(conservation_status)),
   
-  # Load raw phylogenetic tree of all non-hybrid pteridophyte
-  # taxa based on rbcL gene.
-  japan_pterido_tree_raw = read.nexus("data/PD170708Bayes2.nxs"),
+  # Load phylogenetic tree of all non-hybrid pteridophyte
+  # taxa based on rbcL gene from phylogenetic analysis with
+  # mrBayes on CIPRES.
+  japan_pterido_tree_raw = read_nexus_in_zip(
+    "data/japan_pterido_rbcl_cipres.zip", "infile.nex.con.tre")[[2]],
   
   # Process trees.
   # - tree including ferns and lycophtyes

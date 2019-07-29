@@ -30,6 +30,23 @@ process_repro_data <- function (data) {
   
 }
 
+#' Read in a nexus file contained in a zipped archive
+#'
+#' @param zip_folder Path to zip file
+#' @param nexus_file Name of nexus file within zip file
+#'
+#' @return List
+#' 
+read_nexus_in_zip <- function (zip_folder, nexus_file) {
+  
+  temp_dir <- tempdir()
+  
+  unzip(zip_folder, exdir = temp_dir)
+  
+  ape::read.nexus(fs::path(temp_dir, nexus_file))
+
+}
+
 # Basic stats ----
 
 #' Count species per grid cell excluding hybrids
