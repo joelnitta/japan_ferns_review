@@ -1,5 +1,7 @@
 # Data
 
+Data files used in analysis.
+
 2_grid_cells_all.csv: List of 10km grid cells for Japan ("secondary
 grid cells"). Columns include: "id", secondary grid cell code; 
 "name", name of grid cell in Japanese, "x", longitude, "y", latitude. 
@@ -23,12 +25,6 @@ species, subspecies, varieties, and hybrids. Taxon ID refers to that in
 FernGreenList ver. 1.0.1 (http://www.rdplants.org/gl/). Secondary grid code as
 in 2_grid_cells_all190705.xlsx. Herbarium acronyms follow Index Herbariorum (http://sweetgum.nybg.org/science/ih/) with additional acronyms defined in the
 manuscript. Encoding is Unicode (UTF-8).
-
-ESM3_JpFernKeys1.0.zip: An interactive key file for identification of all the 
-native fern and lycophyte taxa (species, subspecies and varieties) in Japan 
-plus a few common naturalized species for the software Lucid v3.3 (free edition) 
-available at http://www.lucidcentral.com. (Not used in analysis, but part of
-the online supplemental data).
 
 FernGreenListV1.01.xls: List of Japanese ferns and lycophytes species including
 scientific name, endemic status, conservation status, and other taxonomic data. 
