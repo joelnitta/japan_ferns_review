@@ -18,22 +18,18 @@ plan <- drake_plan (
     mutate(taxon_id = as.character(taxon_id)),
   
   # Load reproductive mode data, with one row per species.
-  repro_data_raw = read_excel(
-    file_in("data/ESM1.xlsx"),
-    col_types = c("text", "text", "text", "text", "text", 
-                  "numeric", "numeric", "numeric")),
+  repro_data_raw = read_csv(
+    "data/ESM1.csv",
+    col_types = "cccccnnn"),
   
   repro_data = process_repro_data(repro_data_raw),
   
   # Load occurrence data, with multiple rows per species.
   # Occurrences are presences in a set of 10km2 grid 
   # cells across Japan, not actual occurrence points of specimens.
-  occ_data_raw = read_excel(
-    file_in("data/ESM2.xlsx"),
-    col_types = c("text", "text", "text", 
-                  "numeric", "numeric", "text", 
-                  "text", "text")
-  ),
+  occ_data_raw = read_csv(
+    "data/ESM2.csv",
+    col_types = "cccnnccc"),
   
   # - occurrence data including ferns and lycophytes
   occ_data_pteridos = clean_names(occ_data_raw) %>%
@@ -77,8 +73,9 @@ plan <- drake_plan (
     rename(longitude = long, latitude = lat),
   
   # Load list of all 10km2 grid cells across Japan.
-  all_cells = read_excel(
-    file_in("data/2_grid_cells_all190705.xlsx")) %>%
+  all_cells = read_csv(
+    "data/2_grid_cells_all.csv",
+    col_types = "ccnn") %>%
     select(secondary_grid_code = id, longitude = x, latitude = y),
   
   # Analyze basic statistics ----
