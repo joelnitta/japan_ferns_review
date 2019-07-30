@@ -5,8 +5,7 @@ plan <- drake_plan (
   
   # Load Pteridophyte Phylogeny Group I (PPGI) taxonomy.
   # - original version
-  ppgi_raw = read_csv(
-    file_in("data/ppgi_taxonomy.csv")),
+  ppgi_raw = read_csv("data/ppgi_taxonomy.csv"),
   
   # - modify slightly for Pteridophytes of Japan
   ppgi = modify_ppgi(ppgi_raw),
