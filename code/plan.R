@@ -300,6 +300,14 @@ plan <- drake_plan (
     filename = file_out(here("manuscript/fig_1.pdf")),
     height = 234, width = 174, units = "mm"),
   
+  # Make jitter plots
+  fig_2 = assemble_jitter_plots(
+    cps_by_growth, 
+    cps_by_repro, 
+    lat_by_repro, 
+    cps_by_ploidy
+  ),
+
   # Write out manuscript ----
   ms = rmarkdown::render(
     knitr_in(here::here("manuscript/japan_ferns_diversity_ms.Rmd")),

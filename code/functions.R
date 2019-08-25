@@ -701,9 +701,9 @@ make_pd_highlight_map <- function (div_data, world_map, occ_data) {
 #' @return GGplot object
 #'
 #' @examples
-assemble_jitter_plots <- function(cps_by_repro, lat_by_repro, cps_by_ploidy) {
+assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps_by_ploidy) {
   
-  b <- cps_by_repro %>%
+  a <- cps_by_repro %>%
     mutate(
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
@@ -718,7 +718,7 @@ assemble_jitter_plots <- function(cps_by_repro, lat_by_repro, cps_by_ploidy) {
     labs(
       y = "No. Grid cells",
       x = "Reproductive mode",
-      subtitle = "b"
+      subtitle = "a"
     ) +
     standard_theme2() +
     theme(
@@ -726,7 +726,7 @@ assemble_jitter_plots <- function(cps_by_repro, lat_by_repro, cps_by_ploidy) {
       plot.subtitle = element_text(face = "bold")
     )
   
-  c <- lat_by_repro %>%
+  b <- lat_by_repro %>%
     mutate(
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
@@ -741,6 +741,28 @@ assemble_jitter_plots <- function(cps_by_repro, lat_by_repro, cps_by_ploidy) {
     labs(
       y = "Lat. breadth (°)",
       x = "Reproductive mode",
+      subtitle = "b"
+    ) +
+    standard_theme2() +
+    theme(
+      legend.position = "none",
+      plot.subtitle = element_text(face = "bold")
+    )
+  
+  c <- cps_by_growth %>%
+    mutate(
+      growth_type = forcats::fct_recode(
+        growth_type,
+        Evergreen = "evergreen",
+        Seasonal = "seasonal"
+      )
+    ) %>%
+    ggplot(aes(x = growth_type, y = n_grids, color = growth_type)) +
+    geom_jitter(alpha = 0.7) +
+    geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
+    labs(
+      y = "No. Grid cells",
+      x = "Growth type",
       subtitle = "c"
     ) +
     standard_theme2() +
@@ -770,6 +792,6 @@ assemble_jitter_plots <- function(cps_by_repro, lat_by_repro, cps_by_ploidy) {
       plot.subtitle = element_text(face = "bold")
     )
   
-  b + c + d + plot_layout(ncol = 2, nrow = 2)
+  a + b + c + d + plot_layout(ncol = 2, nrow = 2)
   
 }
