@@ -52,6 +52,19 @@ plan <- drake_plan (
     left_join(green_list) %>%
     filter(!is.na(conservation_status)),
   
+  # Load seasonal growth type data (evergreen vs. seasonal),
+  # combine into tibble
+  evergreen_taxa = read_csv("data/evergreenGlistID.csv", col_names = FALSE) %>% 
+    rename(taxon_id = X1) %>%
+    mutate(growth_type = "evergreen"),
+  
+  seasonal_taxa = read_csv("data/seasona-greenGlistID.csv", col_names = FALSE) %>% 
+    rename(taxon_id = X1) %>%
+    mutate(growth_type = "seasonal"),
+  
+  growth_data = bind_rows(evergreen_taxa, seasonal_taxa) %>%
+    mutate(taxon_id = as.character(taxon_id)),
+  
   # Load phylogenetic tree of all non-hybrid pteridophyte
   # taxa based on rbcL gene from phylogenetic analysis with
   # mrBayes on CIPRES.
@@ -88,6 +101,11 @@ plan <- drake_plan (
   # Count grid cells per species (CPS).
   cells_per_species = count_cells_per_species(occ_data_pteridos),
   
+  # Count CPS by evergreen vs. seasonal growth
+  cps_by_growth = count_cells_per_species_by_growth(
+    occ_data_pteridos, growth_data, cells_per_species
+  ),
+  
   # Count CPS by reproductive mode.
   cps_by_repro = count_cells_per_species_by_repro(
     occ_data_pteridos, repro_data
@@ -107,6 +125,11 @@ plan <- drake_plan (
   cps_by_ploidy_means = avg_cells_per_species_by_ploidy(
     cps_by_ploidy
   ),
+  
+  # Run analysis of variance (AOV) on CPS by growth type.
+  cps_by_growth_model_summary = aov(
+      n_grids ~ growth_type, 
+      data = cps_by_growth) %>% tidy,
   
   # Run analysis of variance (AOV) on CPS by reproductive mode.
   cps_by_repro_model_summary = aov(
@@ -276,7 +299,7 @@ plan <- drake_plan (
     plot = fig_1, 
     filename = file_out(here("manuscript/fig_1.pdf")),
     height = 234, width = 174, units = "mm"),
-
+  
   # Write out manuscript ----
   ms = rmarkdown::render(
     knitr_in(here::here("manuscript/japan_ferns_diversity_ms.Rmd")),

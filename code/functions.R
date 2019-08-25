@@ -112,6 +112,41 @@ count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
     ungroup()
 }
 
+#' Count number of grid cells per species by growth type
+#' 
+#' @param occ_data Occurrence data, with one row per
+#' grid cell per taxon, including hybrids.
+#' @param growth_data Growth mode mata, with
+#' one row per taxon, excluding hybrids.
+#' @param cells_per_species Number of grid cells per species
+#' 
+#' @return tibble
+count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_species) {
+  
+  # Make table of taxon IDs and names for occurrence data
+  occ_taxa <-
+    occ_data %>%
+    select(taxon_id, taxon_name) %>%
+    unique
+  
+  # Optional: check for missing species.
+  # These are only hybrid taxa
+  in_occ_missing_from_growth <-
+    anti_join(occ_taxa, growth_data)
+  
+  # Join growth data with cells per species.
+  # Note that some species are both, so these 
+  # will be repeated.
+  growth_data %>%
+    # Make sure all taxon IDs are in the occurrence data
+    verify(all(taxon_id %in% occ_taxa$taxon_id)) %>%
+    left_join(growth_data) %>%
+    left_join(occ_taxa) %>%
+    left_join(cells_per_species) %>%
+    rename(n_grids = n)
+  
+}
+
 #' Get mean number of grid cells per species by reproductive mode
 #'
 #' @param cells_per_species_by_repro Tibble
