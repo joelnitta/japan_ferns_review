@@ -101,7 +101,7 @@ plan <- drake_plan (
   # Count grid cells per species (CPS).
   cells_per_species = count_cells_per_species(occ_data_pteridos),
   
-  # Count CPS by evergreen vs. seasonal growth
+  # Count CPS by growth type (evergreen vs. seasonal growth)
   cps_by_growth = count_cells_per_species_by_growth(
     occ_data_pteridos, growth_data, cells_per_species
   ),
@@ -111,23 +111,28 @@ plan <- drake_plan (
     occ_data_pteridos, repro_data
   ),
   
-  # Calculate mean CPS by reproductive mode.
-  cps_by_repro_means = avg_cells_per_species_by_repro(
-    cps_by_repro
-  ),
-  
   # Count CPS by ploidy level.
   cps_by_ploidy = count_cells_per_species_by_ploidy(
     occ_data_pteridos, repro_data
   ),
   
+  # Calculate mean CPS by growth type
+  cps_by_growth_means = avg_cells_per_species_by_growth(
+    cps_by_growth
+  ),
+  
+  # Calculate mean CPS by reproductive mode.
+  cps_by_repro_means = avg_cells_per_species_by_repro(
+    cps_by_repro
+  ),
+
   # Calculate mean CPS by ploidy level.
   cps_by_ploidy_means = avg_cells_per_species_by_ploidy(
     cps_by_ploidy
   ),
   
-  # Run analysis of variance (AOV) on CPS by growth type.
-  cps_by_growth_model_summary = aov(
+  # Run t-test on CPS by growth type.
+  cps_by_growth_model_summary = t.test(
       n_grids ~ growth_type, 
       data = cps_by_growth) %>% tidy,
   

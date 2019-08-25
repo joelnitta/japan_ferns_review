@@ -147,6 +147,21 @@ count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_s
   
 }
 
+#' Get mean number of grid cells per species by growth type
+#'
+#' @param cells_per_species_by_growth Tibble
+#'
+#' @return Tibble
+avg_cells_per_species_by_growth <- function (cells_per_species_by_growth) {
+  cells_per_species_by_growth %>%
+    group_by(growth_type) %>%
+    summarize(
+      mean = mean(n_grids, na.rm = TRUE),
+      n = n(),
+      sd = sd(n_grids, na.rm = TRUE)
+    )
+}
+
 #' Get mean number of grid cells per species by reproductive mode
 #'
 #' @param cells_per_species_by_repro Tibble
@@ -794,4 +809,16 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
   
   a + b + c + d + plot_layout(ncol = 2, nrow = 2)
   
+}
+
+# Etc ----
+
+# Function for formatting p-values: round to 3 digits,
+# or just say "< 0.001"
+format_pval <- function (x, equals_sign = FALSE) {
+  case_when(
+    x < 0.001 ~ "< 0.001",
+    isTRUE(equals_sign) ~ paste("=", round(x, 3) %>% as.character()),
+    TRUE ~ round(x, 3) %>% as.character()
+  )
 }
