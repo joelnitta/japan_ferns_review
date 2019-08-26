@@ -136,6 +136,12 @@ plan <- drake_plan (
       n_grids ~ growth_type, 
       data = cps_by_growth) %>% tidy,
   
+  # Run t-test on CPS by ploidy level (exluding apomicts)
+  cps_by_ploidy_model_summary = t.test(
+    cps_by_ploidy %>% filter(sexual_diploid == TRUE) %>% pull(n_grids),
+    cps_by_ploidy %>% filter(sexual_polyploid == TRUE) %>% pull(n_grids)
+  ) %>% tidy,
+  
   # Run analysis of variance (AOV) on CPS by reproductive mode.
   cps_by_repro_model_summary = aov(
     n_grids ~ reproductive_mode, 
