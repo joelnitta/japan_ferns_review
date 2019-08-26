@@ -710,14 +710,28 @@ make_pd_highlight_map <- function (div_data, world_map, occ_data) {
 #' by reproductive mode
 #' @param lat_by_repro Dataframe of latitudinal breadth per species
 #' by reproductive mode
+#' @param cps_by_growth Dataframe of number of cells per species
+#' by growth type (evergreen vs seasonal green)
 #' @param cps_by_ploidy Dataframe of number of cells per species
 #' by ploidy level
+#' @param lat_by_repro_tukey Results of Tukey HSD test for latitudinal breadth
+#' by reproductive mode
+#' @param cps_by_growth_model_summary Results of t-test for CPS
+#' by growth type (evergreen vs seasonal green
+#' @param cps_by_ploidy_model_summary Results of t-test for latitudinal breadth
+#' by growth ploidy level (sexual diploid vs sexual polyploid)
 #'
 #' @return GGplot object
 #'
 #' @examples
-assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps_by_ploidy) {
+assemble_jitter_plots <- function(
+  cps_by_repro, lat_by_repro, cps_by_growth, cps_by_ploidy, 
+  lat_by_repro_tukey,
+  cps_by_growth_model_summary,
+  cps_by_ploidy_model_summary) {
   
+  # Part A: cells per species by reproductive mode jitter plot
+  # no signif diff, so don't need to annotate
   a <- cps_by_repro %>%
     mutate(
       reproductive_mode = forcats::fct_recode(
@@ -727,8 +741,8 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
         Apomictic = "apomictic"
       )
     ) %>%
-    ggplot(aes(x = reproductive_mode, y = n_grids, color = reproductive_mode)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = reproductive_mode, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
     labs(
       y = "No. Grid cells",
@@ -741,6 +755,24 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
+  # Part B: lat. breadth by repro mode
+  # Do have signif diff, so add annotations for Tukey groups
+  
+  # Make tukey groups for plotting
+  tukey_groups <-
+    multcomp::cld(lat_by_repro_tukey) %>%
+    purrr::pluck("mcletters", "Letters") %>%
+    tibble(reproductive_mode = names(.), group = .) %>%
+    mutate(
+      y_pos = max(lat_by_repro$lat_breadth) + 2,
+      reproductive_mode = forcats::fct_recode(
+        reproductive_mode,
+        Sexual = "sexual",
+        `Sex. apo.` = "sex_apo",
+        Apomictic = "apomictic"
+      )
+    )
+  
   b <- lat_by_repro %>%
     mutate(
       reproductive_mode = forcats::fct_recode(
@@ -750,9 +782,10 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
         Apomictic = "apomictic"
       )
     ) %>%
-    ggplot(aes(x = reproductive_mode, y = lat_breadth, color = reproductive_mode)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = reproductive_mode, y = lat_breadth), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "grey", outlier.shape = NA) +
+    geom_text(data = tukey_groups, aes(y = y_pos, label = group), color = "black") +
     labs(
       y = "Lat. breadth (°)",
       x = "Reproductive mode",
@@ -764,6 +797,19 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
+  # Part C: CPS by growth
+  # Annotate with asterisks indicating p-value of t-test results
+  asterisks <- cps_by_growth_model_summary %>%
+    mutate(
+      asterisks = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+    ) %>%
+    pull(asterisks)
+  
   c <- cps_by_growth %>%
     mutate(
       growth_type = forcats::fct_recode(
@@ -772,9 +818,10 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
         Seasonal = "seasonal"
       )
     ) %>%
-    ggplot(aes(x = growth_type, y = n_grids, color = growth_type)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = growth_type, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
+    annotate("text", x = 1.5, y = max(cps_by_growth$n_grids) + 1, label = asterisks) +
     labs(
       y = "No. Grid cells",
       x = "Growth type",
@@ -786,6 +833,19 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
+  # Part D: CPS by ploidy
+  # Annotate with asterisks indicating p-value of t-test results
+  asterisks <- cps_by_ploidy_model_summary %>%
+    mutate(
+      asterisks = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+    ) %>%
+    pull(asterisks)
+  
   d <- cps_by_ploidy %>%
     mutate(ploidy = case_when(
       sexual_diploid == TRUE ~ "Diploid",
@@ -793,9 +853,10 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       TRUE ~ NA_character_
     )) %>%
     filter(!is.na(ploidy)) %>%
-    ggplot(aes(x = ploidy, y = n_grids, color = ploidy)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = ploidy, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "grey", outlier.shape = NA) +
+    annotate("text", x = 1.5, y = max(cps_by_ploidy$n_grids) + 1, label = asterisks) +
     labs(
       y = "No. Grid cells",
       x = "Ploidy",

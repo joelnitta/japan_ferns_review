@@ -165,7 +165,9 @@ plan <- drake_plan (
   # AOV of latidudinal breadth by reproductive mode 
   # showed a significant difference, so
   # run Tukey HSD test on results.
-  lat_by_repro_tukey = TukeyHSD(lat_by_repro_model) %>% tidy,
+  lat_by_repro_tukey = multcomp::glht(
+    lat_by_repro_model, 
+    linfct = multcomp::mcp(reproductive_mode = "Tukey")),
   
   # Analyze species richness ----
   
@@ -313,11 +315,16 @@ plan <- drake_plan (
   
   # Make jitter plots
   fig_2 = assemble_jitter_plots(
-    cps_by_growth, 
-    cps_by_repro, 
-    lat_by_repro, 
-    cps_by_ploidy
+    cps_by_repro, lat_by_repro, cps_by_growth, cps_by_ploidy, 
+    lat_by_repro_tukey,
+    cps_by_growth_model_summary,
+    cps_by_ploidy_model_summary
   ),
+  
+  fig_2_out = ggsave(
+    plot = fig_2, 
+    filename = file_out(here("manuscript/fig_2.pdf")),
+    height = 129, width = 129, units = "mm"),
 
   # Write out manuscript ----
   ms = rmarkdown::render(
