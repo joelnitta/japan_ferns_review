@@ -19,7 +19,7 @@ plan <- drake_plan (
   # Load reproductive mode data, with one row per species.
   repro_data_raw = read_csv(
     "data/ESM1.csv",
-    col_types = "cccccnnn"),
+    col_types = "cccccnnnnn"),
   
   repro_data = process_repro_data(repro_data_raw),
   
@@ -51,19 +51,6 @@ plan <- drake_plan (
     occ_data_pteridos %>%
     left_join(green_list) %>%
     filter(!is.na(conservation_status)),
-  
-  # Load seasonal growth type data (evergreen vs. seasonal),
-  # combine into tibble
-  evergreen_taxa = read_csv("data/evergreenGlistID.csv", col_names = FALSE) %>% 
-    rename(taxon_id = X1) %>%
-    mutate(growth_type = "evergreen"),
-  
-  seasonal_taxa = read_csv("data/seasona-greenGlistID.csv", col_names = FALSE) %>% 
-    rename(taxon_id = X1) %>%
-    mutate(growth_type = "seasonal"),
-  
-  growth_data = bind_rows(evergreen_taxa, seasonal_taxa) %>%
-    mutate(taxon_id = as.character(taxon_id)),
   
   # Load phylogenetic tree of all non-hybrid pteridophyte
   # taxa based on rbcL gene from phylogenetic analysis with
@@ -103,7 +90,7 @@ plan <- drake_plan (
   
   # Count CPS by growth type (evergreen vs. seasonal growth)
   cps_by_growth = count_cells_per_species_by_growth(
-    occ_data_pteridos, growth_data, cells_per_species
+    occ_data_pteridos, repro_data, cells_per_species
   ),
   
   # Count CPS by reproductive mode.

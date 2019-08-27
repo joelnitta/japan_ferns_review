@@ -24,9 +24,17 @@ process_repro_data <- function (data) {
       sexual_polyploid = case_when(
         sexual_polyploid == 1 ~ TRUE,
         TRUE ~ FALSE
+      ),
+      evergreen = case_when(
+        evergreen == 1 ~ TRUE,
+        TRUE ~ FALSE
+      ),
+      seasonal_green = case_when(
+        seasonal_green == 1 ~ TRUE,
+        TRUE ~ FALSE
       )
     ) %>%
-    select(taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid) 
+    select(taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid, evergreen, seasonal_green) 
   
 }
 
@@ -99,7 +107,7 @@ count_cells_per_species_by_repro <- function(occ_data, repro_data) {
 #'
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
-#' @param repro_data Reproductive mode mata, with
+#' @param repro_data Reproductive mode data, with
 #' one row per taxon, excluding hybrids.
 #' @return tibble
 count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
@@ -116,12 +124,12 @@ count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
 #' 
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
-#' @param growth_data Growth mode mata, with
+#' @param repro_data Reproductive mode (and growth type) data, with
 #' one row per taxon, excluding hybrids.
 #' @param cells_per_species Number of grid cells per species
 #' 
 #' @return tibble
-count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_species) {
+count_cells_per_species_by_growth <- function(occ_data, repro_data, cells_per_species) {
   
   # Make table of taxon IDs and names for occurrence data
   occ_taxa <-
@@ -137,12 +145,23 @@ count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_s
   # Join growth data with cells per species.
   # Note that some species are both, so these 
   # will be repeated.
-  growth_data %>%
-    # Make sure all taxon IDs are in the occurrence data
-    verify(all(taxon_id %in% occ_taxa$taxon_id)) %>%
-    left_join(growth_data) %>%
+  cps_evergreen <-
+    repro_data %>%
+    filter(evergreen == TRUE) %>%
+    mutate(growth_type = "evergreen") %>%
+    select(taxon_id, growth_type) %>%
     left_join(occ_taxa) %>%
-    left_join(cells_per_species) %>%
+    left_join(cells_per_species)
+  
+  cps_seasonal <-
+    repro_data %>%
+    filter(seasonal_green == TRUE) %>%
+    mutate(growth_type = "seasonal") %>%
+    select(taxon_id, growth_type) %>%
+    left_join(occ_taxa) %>%
+    left_join(cells_per_species)
+  
+  bind_rows(cps_evergreen, cps_seasonal) %>%
     rename(n_grids = n)
   
 }
