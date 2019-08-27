@@ -12,6 +12,8 @@ drafts/
 *.pdf
 .drake*
 *_cache/
+*_files/
 tmp
+.DS_Store
 packrat/*
 !packrat/packrat.lock
