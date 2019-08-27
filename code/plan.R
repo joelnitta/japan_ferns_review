@@ -5,20 +5,20 @@ plan <- drake_plan (
   
   # Load Pteridophyte Phylogeny Group I (PPGI) taxonomy.
   # - original version
-  ppgi_raw = read_csv("data/ppgi_taxonomy.csv"),
+  ppgi_raw = read_csv(file_in("data/ppgi_taxonomy.csv")),
   
   # - modify slightly for Pteridophytes of Japan
   ppgi = modify_ppgi(ppgi_raw),
   
   # Load Fern Green List, with conservation status for each species.
-  green_list = read_excel("data/FernGreenListV1.01.xls") %>%
+  green_list = read_excel(file_in("data/FernGreenListV1.01.xls")) %>%
     select(taxon_id = ID20160331, scientific_name = `GreenList学名`,
            endemic = `固有`, conservation_status = `RL2012`) %>%
     mutate(taxon_id = as.character(taxon_id)),
   
   # Load reproductive mode data, with one row per species.
   repro_data_raw = read_csv(
-    "data/ESM1.csv",
+    file_in("data/ESM1.csv"),
     col_types = "cccccnnnnn"),
   
   repro_data = process_repro_data(repro_data_raw),
@@ -27,7 +27,7 @@ plan <- drake_plan (
   # Occurrences are presences in a set of 10km2 grid 
   # cells across Japan, not actual occurrence points of specimens.
   occ_data_raw = read_csv(
-    "data/ESM2.csv",
+    file_in("data/ESM2.csv"),
     col_types = "cccnnccc"),
   
   # - occurrence data including ferns and lycophytes
@@ -56,7 +56,8 @@ plan <- drake_plan (
   # taxa based on rbcL gene from phylogenetic analysis with
   # mrBayes on CIPRES.
   japan_pterido_tree_raw = read_nexus_in_zip(
-    "data/japan_pterido_rbcl_cipres.zip", "infile.nex.con.tre")[[2]],
+    file_in("data/japan_pterido_rbcl_cipres.zip"), 
+    "infile.nex.con.tre")[[2]],
   
   # Process trees.
   # - tree including ferns and lycophtyes
@@ -73,7 +74,7 @@ plan <- drake_plan (
   
   # Load list of all 10km2 grid cells across Japan.
   all_cells = read_csv(
-    "data/2_grid_cells_all.csv",
+    file_in("data/2_grid_cells_all.csv"),
     col_types = "ccnn") %>%
     select(secondary_grid_code = id, longitude = x, latitude = y),
   
