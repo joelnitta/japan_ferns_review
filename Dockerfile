@@ -1,19 +1,16 @@
-# Only run this after making packrat/packrat.lock by
+# Only run this after making renv.lock by
 # running install_packages.R
 
 FROM rocker/verse:3.6.0
 
-ARG DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update
 
-COPY ./packrat/packrat.lock packrat/
+COPY ./renv.lock ./
 
-RUN Rscript -e 'install.packages("packrat", repos = "https://cran.rstudio.com/")'
+COPY ./renv_restore.R ./
 
-RUN Rscript -e 'packrat::restore()'
+RUN mkdir renv
 
-# Modify Rprofile.site so R loads packrat library by default
-RUN echo '.libPaths("/packrat/lib/x86_64-pc-linux-gnu/3.6.0")' >> /usr/local/lib/R/etc/Rprofile.site
+RUN Rscript renv_restore.R
 
-WORKDIR /home/rstudio/
+RUN echo '.libPaths("/renv")' >> /usr/local/lib/R/etc/Rprofile.site

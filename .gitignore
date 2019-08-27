@@ -13,5 +13,4 @@ drafts/
 .drake*
 *_cache/
 tmp
-packrat/*
-!packrat/packrat.lock
+renv
