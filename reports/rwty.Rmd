@@ -1,0 +1,62 @@
+---
+title: "RWTY"
+author: "Joel Nitta"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+This script checks output of MrBayes to see if the phylogenetic analysis has been run for enough generations.
+
+For more information about the output plots, see the RWTY [vignette](https://cran.r-project.org/web/packages/rwty/vignettes/rwty.html).
+
+Load "RWTY" library and set number of processors (change this as needed if your machine has a different number of processors).
+
+```{r load-package}
+library(rwty)
+rwty.processors <<- 4
+```
+
+Read in trees, trimming to only one per every 25 trees in the log file.
+
+```{r load-trees}
+trees <- load.multi(here::here("data/japan_pterido_rbcl_cipres/"), format = "mb", trim = 25)
+```
+
+Run RWTY analyses (makes various plots and calculates effective sample size). 
+
+This takes ca. 2 hr 30 minutes to run with 4 processors.
+
+```{r rwty-analysis}
+# Set burnin to 25% of trees 
+# = 100, since there are 10,000,000 generations with trees stored once per 1,000 generations,
+# and we read in one per every 25 trees.
+rbcl.rwty <- analyze.rwty(trees, burnin = 100, fill.color = 'LnL')
+```
+
+Plot different parameters.
+
+```{r plot-output}
+# - Log-Likelihood trace
+rbcl.rwty$LnL.trace
+
+# - Topology trace
+rbcl.rwty$topology.trace.plot
+
+# - Topological autocorrelation plot
+rbcl.rwty$autocorr.plot
+
+# - Treespace heatmap
+rbcl.rwty$treespace.heatmap
+
+# - Cumulative splits frequences plot
+rbcl.rwty$splitfreqs.cumulative.plot
+```
+
+Check the approximate sample size (should be greater than 200).
+
+```{r check-ess}
+topological.approx.ess(trees, burnin = 100)
+```
