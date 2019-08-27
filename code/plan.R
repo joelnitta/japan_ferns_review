@@ -5,21 +5,21 @@ plan <- drake_plan (
   
   # Load Pteridophyte Phylogeny Group I (PPGI) taxonomy.
   # - original version
-  ppgi_raw = read_csv("data/ppgi_taxonomy.csv"),
+  ppgi_raw = read_csv(file_in("data/ppgi_taxonomy.csv")),
   
   # - modify slightly for Pteridophytes of Japan
   ppgi = modify_ppgi(ppgi_raw),
   
   # Load Fern Green List, with conservation status for each species.
-  green_list = read_excel("data/FernGreenListV1.01.xls") %>%
+  green_list = read_excel(file_in("data/FernGreenListV1.01.xls")) %>%
     select(taxon_id = ID20160331, scientific_name = `GreenList学名`,
            endemic = `固有`, conservation_status = `RL2012`) %>%
     mutate(taxon_id = as.character(taxon_id)),
   
   # Load reproductive mode data, with one row per species.
   repro_data_raw = read_csv(
-    "data/ESM1.csv",
-    col_types = "cccccnnn"),
+    file_in("data/ESM1.csv"),
+    col_types = "cccccnnnnn"),
   
   repro_data = process_repro_data(repro_data_raw),
   
@@ -27,7 +27,7 @@ plan <- drake_plan (
   # Occurrences are presences in a set of 10km2 grid 
   # cells across Japan, not actual occurrence points of specimens.
   occ_data_raw = read_csv(
-    "data/ESM2.csv",
+    file_in("data/ESM2.csv"),
     col_types = "cccnnccc"),
   
   # - occurrence data including ferns and lycophytes
@@ -52,24 +52,12 @@ plan <- drake_plan (
     left_join(green_list) %>%
     filter(!is.na(conservation_status)),
   
-  # Load seasonal growth type data (evergreen vs. seasonal),
-  # combine into tibble
-  evergreen_taxa = read_csv("data/evergreenGlistID.csv", col_names = FALSE) %>% 
-    rename(taxon_id = X1) %>%
-    mutate(growth_type = "evergreen"),
-  
-  seasonal_taxa = read_csv("data/seasona-greenGlistID.csv", col_names = FALSE) %>% 
-    rename(taxon_id = X1) %>%
-    mutate(growth_type = "seasonal"),
-  
-  growth_data = bind_rows(evergreen_taxa, seasonal_taxa) %>%
-    mutate(taxon_id = as.character(taxon_id)),
-  
   # Load phylogenetic tree of all non-hybrid pteridophyte
   # taxa based on rbcL gene from phylogenetic analysis with
   # mrBayes on CIPRES.
   japan_pterido_tree_raw = read_nexus_in_zip(
-    "data/japan_pterido_rbcl_cipres.zip", "infile.nex.con.tre")[[2]],
+    file_in("data/japan_pterido_rbcl_cipres.zip"), 
+    "infile.nex.con.tre")[[2]],
   
   # Process trees.
   # - tree including ferns and lycophtyes
@@ -86,7 +74,7 @@ plan <- drake_plan (
   
   # Load list of all 10km2 grid cells across Japan.
   all_cells = read_csv(
-    "data/2_grid_cells_all.csv",
+    file_in("data/2_grid_cells_all.csv"),
     col_types = "ccnn") %>%
     select(secondary_grid_code = id, longitude = x, latitude = y),
   
@@ -101,9 +89,9 @@ plan <- drake_plan (
   # Count grid cells per species (CPS).
   cells_per_species = count_cells_per_species(occ_data_pteridos),
   
-  # Count CPS by evergreen vs. seasonal growth
+  # Count CPS by growth type (evergreen vs. seasonal growth)
   cps_by_growth = count_cells_per_species_by_growth(
-    occ_data_pteridos, growth_data, cells_per_species
+    occ_data_pteridos, repro_data, cells_per_species
   ),
   
   # Count CPS by reproductive mode.
@@ -111,25 +99,36 @@ plan <- drake_plan (
     occ_data_pteridos, repro_data
   ),
   
-  # Calculate mean CPS by reproductive mode.
-  cps_by_repro_means = avg_cells_per_species_by_repro(
-    cps_by_repro
-  ),
-  
   # Count CPS by ploidy level.
   cps_by_ploidy = count_cells_per_species_by_ploidy(
     occ_data_pteridos, repro_data
   ),
   
+  # Calculate mean CPS by growth type
+  cps_by_growth_means = avg_cells_per_species_by_growth(
+    cps_by_growth
+  ),
+  
+  # Calculate mean CPS by reproductive mode.
+  cps_by_repro_means = avg_cells_per_species_by_repro(
+    cps_by_repro
+  ),
+
   # Calculate mean CPS by ploidy level.
   cps_by_ploidy_means = avg_cells_per_species_by_ploidy(
     cps_by_ploidy
   ),
   
-  # Run analysis of variance (AOV) on CPS by growth type.
-  cps_by_growth_model_summary = aov(
+  # Run t-test on CPS by growth type.
+  cps_by_growth_model_summary = t.test(
       n_grids ~ growth_type, 
       data = cps_by_growth) %>% tidy,
+  
+  # Run t-test on CPS by ploidy level (exluding apomicts)
+  cps_by_ploidy_model_summary = t.test(
+    cps_by_ploidy %>% filter(sexual_diploid == TRUE) %>% pull(n_grids),
+    cps_by_ploidy %>% filter(sexual_polyploid == TRUE) %>% pull(n_grids)
+  ) %>% tidy,
   
   # Run analysis of variance (AOV) on CPS by reproductive mode.
   cps_by_repro_model_summary = aov(
@@ -154,7 +153,9 @@ plan <- drake_plan (
   # AOV of latidudinal breadth by reproductive mode 
   # showed a significant difference, so
   # run Tukey HSD test on results.
-  lat_by_repro_tukey = TukeyHSD(lat_by_repro_model) %>% tidy,
+  lat_by_repro_tukey = multcomp::glht(
+    lat_by_repro_model, 
+    linfct = multcomp::mcp(reproductive_mode = "Tukey")),
   
   # Analyze species richness ----
   
@@ -302,11 +303,16 @@ plan <- drake_plan (
   
   # Make jitter plots
   fig_2 = assemble_jitter_plots(
-    cps_by_growth, 
-    cps_by_repro, 
-    lat_by_repro, 
-    cps_by_ploidy
+    cps_by_repro, lat_by_repro, cps_by_growth, cps_by_ploidy, 
+    lat_by_repro_tukey,
+    cps_by_growth_model_summary,
+    cps_by_ploidy_model_summary
   ),
+  
+  fig_2_out = ggsave(
+    plot = fig_2, 
+    filename = file_out(here("manuscript/fig_2.pdf")),
+    height = 129, width = 129, units = "mm"),
 
   # Write out manuscript ----
   ms = rmarkdown::render(

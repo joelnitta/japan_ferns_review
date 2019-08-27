@@ -24,9 +24,17 @@ process_repro_data <- function (data) {
       sexual_polyploid = case_when(
         sexual_polyploid == 1 ~ TRUE,
         TRUE ~ FALSE
+      ),
+      evergreen = case_when(
+        evergreen == 1 ~ TRUE,
+        TRUE ~ FALSE
+      ),
+      seasonal_green = case_when(
+        seasonal_green == 1 ~ TRUE,
+        TRUE ~ FALSE
       )
     ) %>%
-    select(taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid) 
+    select(taxon_id, reproductive_mode, sexual_diploid, sexual_polyploid, evergreen, seasonal_green) 
   
 }
 
@@ -99,7 +107,7 @@ count_cells_per_species_by_repro <- function(occ_data, repro_data) {
 #'
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
-#' @param repro_data Reproductive mode mata, with
+#' @param repro_data Reproductive mode data, with
 #' one row per taxon, excluding hybrids.
 #' @return tibble
 count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
@@ -116,12 +124,12 @@ count_cells_per_species_by_ploidy <- function(occ_data, repro_data) {
 #' 
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
-#' @param growth_data Growth mode mata, with
+#' @param repro_data Reproductive mode (and growth type) data, with
 #' one row per taxon, excluding hybrids.
 #' @param cells_per_species Number of grid cells per species
 #' 
 #' @return tibble
-count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_species) {
+count_cells_per_species_by_growth <- function(occ_data, repro_data, cells_per_species) {
   
   # Make table of taxon IDs and names for occurrence data
   occ_taxa <-
@@ -129,22 +137,43 @@ count_cells_per_species_by_growth <- function(occ_data, growth_data, cells_per_s
     select(taxon_id, taxon_name) %>%
     unique
   
-  # Optional: check for missing species.
-  # These are only hybrid taxa
-  in_occ_missing_from_growth <-
-    anti_join(occ_taxa, growth_data)
-  
   # Join growth data with cells per species.
   # Note that some species are both, so these 
   # will be repeated.
-  growth_data %>%
-    # Make sure all taxon IDs are in the occurrence data
-    verify(all(taxon_id %in% occ_taxa$taxon_id)) %>%
-    left_join(growth_data) %>%
+  cps_evergreen <-
+    repro_data %>%
+    filter(evergreen == TRUE) %>%
+    mutate(growth_type = "evergreen") %>%
+    select(taxon_id, growth_type) %>%
     left_join(occ_taxa) %>%
-    left_join(cells_per_species) %>%
+    left_join(cells_per_species)
+  
+  cps_seasonal <-
+    repro_data %>%
+    filter(seasonal_green == TRUE) %>%
+    mutate(growth_type = "seasonal") %>%
+    select(taxon_id, growth_type) %>%
+    left_join(occ_taxa) %>%
+    left_join(cells_per_species)
+  
+  bind_rows(cps_evergreen, cps_seasonal) %>%
     rename(n_grids = n)
   
+}
+
+#' Get mean number of grid cells per species by growth type
+#'
+#' @param cells_per_species_by_growth Tibble
+#'
+#' @return Tibble
+avg_cells_per_species_by_growth <- function (cells_per_species_by_growth) {
+  cells_per_species_by_growth %>%
+    group_by(growth_type) %>%
+    summarize(
+      mean = mean(n_grids, na.rm = TRUE),
+      n = n(),
+      sd = sd(n_grids, na.rm = TRUE)
+    )
 }
 
 #' Get mean number of grid cells per species by reproductive mode
@@ -695,25 +724,42 @@ make_pd_highlight_map <- function (div_data, world_map, occ_data) {
 #' by reproductive mode
 #' @param lat_by_repro Dataframe of latitudinal breadth per species
 #' by reproductive mode
+#' @param cps_by_growth Dataframe of number of cells per species
+#' by growth type (evergreen vs seasonal green)
 #' @param cps_by_ploidy Dataframe of number of cells per species
 #' by ploidy level
+#' @param lat_by_repro_tukey Results of Tukey HSD test for latitudinal breadth
+#' by reproductive mode
+#' @param cps_by_growth_model_summary Results of t-test for CPS
+#' by growth type (evergreen vs seasonal green
+#' @param cps_by_ploidy_model_summary Results of t-test for latitudinal breadth
+#' by growth ploidy level (sexual diploid vs sexual polyploid)
 #'
 #' @return GGplot object
 #'
 #' @examples
-assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps_by_ploidy) {
+assemble_jitter_plots <- function(
+  cps_by_repro, lat_by_repro, cps_by_growth, cps_by_ploidy, 
+  lat_by_repro_tukey,
+  cps_by_growth_model_summary,
+  cps_by_ploidy_model_summary) {
   
+  # Part A: cells per species by reproductive mode jitter plot
+  # no signif diff, so don't need to annotate
   a <- cps_by_repro %>%
     mutate(
+      reproductive_mode = forcats::fct_relevel(
+        reproductive_mode,
+        c("sexual", "sex_apo", "apomictic")),
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
         Sexual = "sexual",
         `Sex. apo.` = "sex_apo",
         Apomictic = "apomictic"
       )
-    ) %>%
-    ggplot(aes(x = reproductive_mode, y = n_grids, color = reproductive_mode)) +
-    geom_jitter(alpha = 0.7) +
+    ) %>% 
+    ggplot(aes(x = reproductive_mode, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
     labs(
       y = "No. Grid cells",
@@ -726,8 +772,16 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
-  b <- lat_by_repro %>%
+  # Part B: lat. breadth by repro mode
+  # Do have signif diff, so add annotations for Tukey groups
+  
+  # Make tukey groups for plotting
+  tukey_groups <-
+    multcomp::cld(lat_by_repro_tukey) %>%
+    purrr::pluck("mcletters", "Letters") %>%
+    tibble(reproductive_mode = names(.), group = .) %>%
     mutate(
+      y_pos = max(lat_by_repro$lat_breadth) + 2,
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
         Sexual = "sexual",
@@ -735,9 +789,28 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
         Apomictic = "apomictic"
       )
     ) %>%
-    ggplot(aes(x = reproductive_mode, y = lat_breadth, color = reproductive_mode)) +
-    geom_jitter(alpha = 0.7) +
+    # Switch letters so "a" is on the left.
+    mutate(group = case_when(
+      group == "a" ~ "b",
+      group == "b" ~ "a"
+    ))
+  
+  b <- lat_by_repro %>%
+    mutate(
+      reproductive_mode = forcats::fct_relevel(
+        reproductive_mode,
+        c("sexual", "sex_apo", "apomictic")),
+      reproductive_mode = forcats::fct_recode(
+        reproductive_mode,
+        Sexual = "sexual",
+        `Sex. apo.` = "sex_apo",
+        Apomictic = "apomictic"
+      )
+    ) %>%
+    ggplot(aes(x = reproductive_mode, y = lat_breadth), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "grey", outlier.shape = NA) +
+    geom_text(data = tukey_groups, aes(y = y_pos, label = group), color = "black") +
     labs(
       y = "Lat. breadth (°)",
       x = "Reproductive mode",
@@ -749,6 +822,19 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
+  # Part C: CPS by growth
+  # Annotate with asterisks indicating p-value of t-test results
+  asterisks <- cps_by_growth_model_summary %>%
+    mutate(
+      asterisks = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+    ) %>%
+    pull(asterisks)
+  
   c <- cps_by_growth %>%
     mutate(
       growth_type = forcats::fct_recode(
@@ -757,9 +843,10 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
         Seasonal = "seasonal"
       )
     ) %>%
-    ggplot(aes(x = growth_type, y = n_grids, color = growth_type)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = growth_type, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
+    annotate("text", x = 1.5, y = max(cps_by_growth$n_grids) + 1, label = asterisks) +
     labs(
       y = "No. Grid cells",
       x = "Growth type",
@@ -771,16 +858,30 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
       plot.subtitle = element_text(face = "bold")
     )
   
+  # Part D: CPS by ploidy
+  # Annotate with asterisks indicating p-value of t-test results
+  asterisks <- cps_by_ploidy_model_summary %>%
+    mutate(
+      asterisks = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+    ) %>%
+    pull(asterisks)
+  
   d <- cps_by_ploidy %>%
     mutate(ploidy = case_when(
-      sexual_diploid == TRUE ~ "Diploid",
-      sexual_polyploid == TRUE ~ "Polyploid",
+      sexual_diploid == TRUE ~ "Sexual\ndiploid",
+      sexual_polyploid == TRUE ~ "Sexual\npolyploid",
       TRUE ~ NA_character_
     )) %>%
     filter(!is.na(ploidy)) %>%
-    ggplot(aes(x = ploidy, y = n_grids, color = ploidy)) +
-    geom_jitter(alpha = 0.7) +
+    ggplot(aes(x = ploidy, y = n_grids), color = "black") +
+    geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "grey", outlier.shape = NA) +
+    annotate("text", x = 1.5, y = max(cps_by_ploidy$n_grids) + 1, label = asterisks) +
     labs(
       y = "No. Grid cells",
       x = "Ploidy",
@@ -794,4 +895,16 @@ assemble_jitter_plots <- function(cps_by_growth, cps_by_repro, lat_by_repro, cps
   
   a + b + c + d + plot_layout(ncol = 2, nrow = 2)
   
+}
+
+# Etc ----
+
+# Function for formatting p-values: round to 3 digits,
+# or just say "< 0.001"
+format_pval <- function (x, equals_sign = FALSE) {
+  case_when(
+    x < 0.001 ~ "< 0.001",
+    isTRUE(equals_sign) ~ paste("=", round(x, 3) %>% as.character()),
+    TRUE ~ round(x, 3) %>% as.character()
+  )
 }

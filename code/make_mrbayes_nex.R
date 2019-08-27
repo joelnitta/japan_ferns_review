@@ -66,7 +66,7 @@ mrbayes_block <- c(
     paste(constraints$family, collapse = ", "), 
     ");"),
   "lset nst=6 rates=invgamma; [GTR+I+G]",
-  "mcmcp ngen=1000000 nruns=2 nchains=4 samplefreq = 1000 printfreq = 1000 temp = 0.005 relburnin = yes burninfrac = 0.25;",
+  "mcmcp ngen=10000000 nruns=2 nchains=4 samplefreq = 1000 printfreq = 1000 temp = 0.005 relburnin = yes burninfrac = 0.25;",
   "mcmc;",
   "sumt conformat = simple;",
   "END;"
