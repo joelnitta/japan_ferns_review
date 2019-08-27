@@ -137,11 +137,6 @@ count_cells_per_species_by_growth <- function(occ_data, repro_data, cells_per_sp
     select(taxon_id, taxon_name) %>%
     unique
   
-  # Optional: check for missing species.
-  # These are only hybrid taxa
-  in_occ_missing_from_growth <-
-    anti_join(occ_taxa, growth_data)
-  
   # Join growth data with cells per species.
   # Note that some species are both, so these 
   # will be repeated.
@@ -753,13 +748,16 @@ assemble_jitter_plots <- function(
   # no signif diff, so don't need to annotate
   a <- cps_by_repro %>%
     mutate(
+      reproductive_mode = forcats::fct_relevel(
+        reproductive_mode,
+        c("sexual", "sex_apo", "apomictic")),
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
         Sexual = "sexual",
         `Sex. apo.` = "sex_apo",
         Apomictic = "apomictic"
       )
-    ) %>%
+    ) %>% 
     ggplot(aes(x = reproductive_mode, y = n_grids), color = "black") +
     geom_jitter(shape = 1, width = 0.25) +
     geom_boxplot(fill = "transparent", color = "dark grey", outlier.shape = NA) +
@@ -790,10 +788,18 @@ assemble_jitter_plots <- function(
         `Sex. apo.` = "sex_apo",
         Apomictic = "apomictic"
       )
-    )
+    ) %>%
+    # Switch letters so "a" is on the left.
+    mutate(group = case_when(
+      group == "a" ~ "b",
+      group == "b" ~ "a"
+    ))
   
   b <- lat_by_repro %>%
     mutate(
+      reproductive_mode = forcats::fct_relevel(
+        reproductive_mode,
+        c("sexual", "sex_apo", "apomictic")),
       reproductive_mode = forcats::fct_recode(
         reproductive_mode,
         Sexual = "sexual",
@@ -867,8 +873,8 @@ assemble_jitter_plots <- function(
   
   d <- cps_by_ploidy %>%
     mutate(ploidy = case_when(
-      sexual_diploid == TRUE ~ "Diploid",
-      sexual_polyploid == TRUE ~ "Polyploid",
+      sexual_diploid == TRUE ~ "Sexual\ndiploid",
+      sexual_polyploid == TRUE ~ "Sexual\npolyploid",
       TRUE ~ NA_character_
     )) %>%
     filter(!is.na(ploidy)) %>%
