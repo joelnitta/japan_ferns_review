@@ -41,6 +41,10 @@ Darnaedi D, Kato M, IwatsukiK (1990) Electrophoretic evidence for the
 origin of *Dryopteris yakusilvicola* (Dryopteridaceae). Bot Mag (Tokyo)
 103:1-10. doi: 10.1007/BF02488406
 
+Dassler CL, Farrar DR (2001) Significance of gametophyte form in long-distance colonization by tropical, epiphytic ferns. Brittonia 53:352-369. doi: 10.1007/BF02812705
+
+Dauphin B, Grant JR, Farrar DR, Rothfels CJ (2018) Rapid allopolyploid radiation of moonwort ferns (*Botrychium*; Ophioglossaceae) revealed by PacBio sequencing of homologous and homeologous nuclear regions. Mol Phylog Evol 120:342-353. doi: 10.1016/j.ympev.2017.11.025
+
 Ebihara A (2011) *RbcL* phylogeny of Japanese pteridophyte flora and
 implications on infrafamilial systematics. Bull Nat Mus Nat Sci B
 37:63-74
@@ -66,10 +70,12 @@ Ebihara A, Ito M, Nagamasu H, Fujii S, Katsuyama T, Yonekura K, Yahara,
 T (2017a) FernGreenList ver. 1.01. http://www.rdplants.org/gl/
 Accessed at 21 July 2019
 
-Ebihara A, Matsumoto S, Ito M (2009) Hybridization involving independent
+Ebihara A, Matsumoto S, Ito M (2009a) Hybridization involving independent
 gametophytes in the *Vandenboschia radicans* complex (Hymenophyllaceae):
 a new perspective on the distribution of fern hybrids. Molec Ecol
 18:4904-4911. doi: 10.1111/j.1365-294X.2009.04406.x
+
+Ebihara A, Matsumoto S, Ito M (2009b) Taxonomy of the reticulate *Vandenboschia radicans* complex (Hymenophyllaceae) in Japan. Acta Phytotax Geobot 60:26-40. doi: 10.18942/apg.KJ00005576220
 
 Ebihara A, Matsumoto S, Kato M (2012) Origin of *Dryopteris shibipedis*
 (Dryopteridaceae), a fern species extinct in the wild. J Plant Res
@@ -136,9 +142,7 @@ Y (2017) Allotetraploid cryptic species in *Asplenium* *normale* in the
 Japanese Archipelago, detected by chemotaxonomic and multi-locus
 genotype approaches. Amer J Bot 104:1390-1406. doi: 10.3732/ajb.1700141
 
-Gabriel y Galan JM, Molino S, Sessa EB, Wasowicz P (in press) A
-multi-character analysis of *Struthiopteris* leads to the rescue of
-*Spicantopsis* (Blechnaceae, Polypodiopsida). Taxon
+Gray A (1859) Diagnostic characters of new species of phanogamous plants collected in Japan by Charles Wright, Botanist of the U. S. North Pacific Exploring Expedition, with observations upon the relations of the Japanese flora to that of North America, and of other parts of the northern temperate zone. Mem Amer Acad Arts Sci, Nat Sci 6:377–453
 
 Grusz AL (2016) A current perspective on apomixis in ferns. J Syst Evol
 54:656-665. doi: 10.1111/jse.12228
@@ -192,6 +196,8 @@ K. Hori & N. Murak. (Dryopteridaceae), new tetraploid apogamous
 pteridophytes of hybrid origin from Tsushima, Japan. Acta Phytotax
 Geobot 69:143-160. doi: 10.18942/apg.201809
 
+Isagi Y (2012) Investigation of Biodiversity Conservation on the Basis of Ubiquitous Genotyping of Critically Endangered Plant Species. https://www.env.go.jp/policy/kenkyu/suishin/kadai/syuryo_report/pdf/D-0903.pdf (in Japanese with English summary)
+
 Ishikawa H, Watano Y, Kano K, Ito M, Kurita S (2002) Development of
 primer sets for PCR amplification of the *PgiC* gene in ferns. J Plant
 Res 115:65-70. doi: 10.1007/s102650200010
@@ -211,16 +217,26 @@ Jaruwattanaphan T, Matsumoto S, Watano Y (2013) Reconstructing hybrid
 speciation events in the *Pteris* *cretica* group (Pteridaceae) in Japan
 and adjacent regions. Syst Bot 38:15-27. doi: 10.1600/036364413X661980
 
+Kao TT, Pryer KM, Freund FD, Windham MD, Rothfels CJ (2019) Low-copy nuclear sequence data confirm complex patterns of farina evolution in notholaenid ferns (Pteridaceae). Molec Phylog Evol 138:139-155. doi: 10.1016/j.ympev.2019.05.016 
+
+Kato M (1993) Biogeography of ferns: dispersal and vicariance. J Biogeogr 20:265-274
+
+Kato M, Iwatsuki K (1983) Phytogeographic relationships of pteridophytes between temperate North America and Japan. Ann Missouri Bot Gard 70:724-733 
+
 Katoh K, Kuma K, Toh H, Miyata T (2005) MAFFT version 5: improvement in
-accuracy of multiple sequence alignment. Nucleic Acids Res. 33:511-518
+accuracy of multiple sequence alignment. Nucleic Acids Res 33:511-518
 
 Knapp R (2014) Commented list of Pteridophytes of Taiwan (ed. 3.1).
 https://sites.google.com/site/fernsoftaiwan/ Accessed 21 July 2019
+
+Kuo LY, Chang YH, Huang YH, Testo W, Ebihara A, Rouhan G, Quintanilla LG, Watkins Jr JE, Huang YM, Li FW (in press) A global phylogeny of *Stegnogramma* ferns (Thelypteridaceae): generic and sectional revision, historical biogeography and evolution of leaf architecture. Cladistics. doi:10.1111/cla.12399
 
 Kuo LY, Chen CW, Shinohara W, Ebihara A, Kudoh H, Sato H, Huang YM,
 Chiou WL (2017) Not only in the temperate zone: independent gametophytes
 of two vittarioid ferns (Pteridaceae, Polypodiales) in East Asian
 subtropics. J Plant Res 130:255-262. doi: 10.1007/s10265-016-0897-x
+
+Kuo LY, Ebihara A, Chen CW, Li FW, Huang YM, Rouhan G (2018) Phylogeny of Lomariopsidaceae: evolution of epiphytism and multiple origins of independent gametophytes. Abstract book of 7th Asian Symposium of Ferns & Lycophytes. National Taiwan University, Taiwan Forestry Research Institute, Taiwan Society of Plant Systematics, Dr. Cecilia Koo Botanic Conservation Center, Taiwan, p 25
 
 Kuo LY, Ebihara A, Hsu TC, Rouhan G, Huang YM, Wang CN, Chiou WL, Kato M
 (2018) Infrageneric revision of the fern genus *Deparia* (Athyriaceae,
@@ -275,6 +291,8 @@ endophytes in lycophytes and ferns\--a global phylogenetic and
 ecological perspective. Symbiosis 71:77-89. doi:
 10.1007/s13199-016-0436-5
 
+Li F-W, Kuo L-Y, Pryer KM, Rothfels CJ (2016) Genes translocated into the plastid inverted repeat show decelerated substitution rates and elevated GC content. Genome Biol Evol 8:2452–2458. doi: 10.1093/gbe/evw167
+
 Lin SJ, Kato M, Iwatsuki K (1994) A taxonomic study of the fern genus
 *Sphenomeris* (Lindsaeaceae) in Japan. J Jpn Bot 69:127-141
 
@@ -286,6 +304,8 @@ lato (Lindsaeaceae) in Japan. J Plant Res 109:201-209. doi:
 Lin YX, Viane R (2013) Aspleniaceae. In: Wu ZY, Raven PH, Hong DY (eds)
 Flora of China, Vol. 2-3 (pteridophytes). Science Press, Beijing;
 Missouri Botanical Garden Press, St. Louis, pp 267-316
+
+Lu J-M, Li D-Z, Lutz S, Soejima A, Yi T-S, Wen J (2011) Biogeographic disjunction between eastern Asia and North America in the *Adiantum pedatum* complex. Amer J Bot 98:1680–1693. doi: 10.3732/ajb.1100125
 
 Makino T, Nemoto K (1925) Nippon-Shokubutsu-Soran (Flora of Japan) with
 descriptions of every plant phanerograms and higher cryptogams
@@ -323,6 +343,8 @@ Japanese with English summary). doi: 10.18942/bunruichiri.KJ00001078592
 Mitsuta S (1988) Distribution and reproductive types of genus
 *Cyrtomium* (Dryopteridaceae) in China. Sci Engin Rev Doshisha Univ
 28:31-51 (in Japanese with English summary)
+
+Molino S, Gabriel y Galan JM, Sessa EB, Wasowicz P (2019) A multi-character analysis of *Struthiopteris* leads to the rescue of *Spicantopsis* (Blechnaceae, Polypodiopsida). Taxon 68:185-198. doi: /10.1002/tax.12036
 
 Momose S (1967) Prothallia of the Japanese ferns (Filicales). University
 of Tokyo Press, Tokyo (in Japanese)
@@ -397,6 +419,8 @@ The Pteridophyte Phylogeny Group (2016) A community-derived
 classification for extant lycophytes and ferns. J Syst Evol 54:563-606.
 doi: 10.1111/jse.12229
 
+R Core Team (2019) R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. https://www.R-project.org/.
+
 Ronquist F, Teslenko M, van der Mark P, Ayres DL, Darling A, Höhna S,
 Larget B, Liu L, Suchard MA, Huelsenbeck JP (2012) MRBAYES 3.2:
 Efficient Bayesian phylogenetic inference and model selection across a
@@ -435,12 +459,16 @@ Suzuki T, Watanabe I, Shiraiwa T (2005) Allozyme types of water fern
 *Azolla* *japonica* and its relatives (Azollaceae) growing in Japan.
 Acta Phytotax Geobot 56:71-83. doi: 10.18942/apg.KJ00004622914
 
-Tagawa M (1959) Coloured illustrations of the Japanese pteridophyta.
+Tagawa M (1959) Coloured Illustrations of the Japanese pteridophyta.
 Hoikusha, Osaka (in Japanese)
+
+Taiwan Pteridophyte Group (TPG) (2019) Updating Taiwanese pteridophyte checklist: a new phylogenetic classification. Taiwania 64:367-395. doi: 10.6165/tai.2019.64.367
 
 Takahashi N, Imaichi R (2007) Developmental morphology of young
 gametophytes of *Botrychium* *microphyllum* in axenic culture. J Jpn
 Women\'s Univ Fac Sci 15:45-49
+
+Takhtajan A (1986) Floristic Regions of the World. University of California Press, Berkeley, Los Angeles, London
 
 Takamiya M (1989) Cytological and ecological studies on the speciation
 of *Lycopodium* *clavatum* L. in the Japanese Archipelago. J Sci
@@ -489,10 +517,14 @@ Bot 94:58-60 (in Japanese with English summary)
 Wagner WH Jr (1954) Reticulate evolution in the Appalachian Aspleniums.
 Evolution 8:103-118
 
+Wagner WH Jr, Chen CL (1965) Abortion of spores and sporangia as a tool in the detection of *Dryopteris* hybrids. Amer Fern J 55:9-29
+
 Wang L, Qi XP, Xiang QP, Heinrichs J, Schneider H, Zhang XC (2010)
 Phylogeny of the paleotropical fern genus *Lepisorus* (Polypodiaceae,
 Polypodiopsida) inferred from four chloroplast DNA regions. Molec
 Phylogen Evol 54:211-225. doi: 10.1016/j.ympev.2009.08.032
+
+Warren DL, Geneva AJ, Lanfear R, Rosenberg M (2017) RWTY (R We There Yet): An R package for examining convergence of Bayesian phylogenetic analyses. Mol Biol Evol 34:1016–1020. doi: 10.1093/molbev/msw279
 
 Wei R, Schneider H, Zhang XC (2013) Toward a new circumscription of the
 twinsorus-fern genus *Diplazium* (Athyriaceae): A molecular phylogeny
@@ -503,6 +535,8 @@ Wu ZY, Raven PH, Hong D (2013) Flora of China, volumes 2\--3,
 Lycopodiaceae through Polypodiaceae. Science Press, Beijing; Missouri
 Botanical Garden Press, St. Louis
 
+Xiang JY, Wen J, Peng H (2015) Evolution of the eastern Asian–North American biogeographic disjunctions in ferns and lycophytes. J Syst Evol 53:2-32. doi: 10.1111/jse.12141
+
 Xu KW, Zhang L, Lu NT, Zhou XM, He H, Luong TT, Knapp R, Liao WB, Zhang
 LB (2018) Nine new species of *Hymenasplenium* (Aspleniaceae) from Asia.
 Phytotaxa 358:1-25. doi: 10.11646/phytotaxa.358.1.1
@@ -511,6 +545,8 @@ Yatabe Y, Tsutsumi C, Hirayama Y, Mori K, Murakami N, Kato M (2009)
 Genetic population structure of *Osmunda* *japonica*, rheophilous
 *Osmunda* *lancea* and their hybrids. J Plant Res 122:585-595. doi:
 10.1007/s10265-009-0254-4
+
+Yatabe Y, Watkins JE, Farrar DR, Murakami N (2002) Genetic variation in populations of the morphologically and ecologically variable fern *Stegnogramma pozoi* subsp. *mollissima* (Thelypteridaceae) in Japan. J Plant Res 115:29-38. doi: 10.1007/s102650200005 
 
 Yatabe Y, Yamamoto K, Tsutsumi C, Shinohara W, Murakami N, Kato M (2011)
 Fertility and precocity of *Osmunda* × *intermedia* offspring in
