@@ -2,21 +2,25 @@
 
 Data files used in analysis.
 
-2_grid_cells_all.csv: List of 10km grid cells for Japan ("secondary
+2_grid_cells_all.csv: List of 10 km x 10 km grid cells for Japan ("secondary
 grid cells"). Columns include: "id", secondary grid cell code; 
-"name", name of grid cell in Japanese, "x", longitude, "y", latitude. 
+"name", name of grid cell in Japanese, "x", longitude, "y", latitude.
+Latitude and longitude are centers of grid cells.
 Secondary grid code refers to "Basic Grid Square Codes" defined by the 
 statistics Bureau of Japan (http://www.stat.go.jp/english/data/mesh/05.html).
 Encoding is Unicode (UTF-8).
 
 ESM1.csv: A list of native fern and lycophyte taxa (species, subspecies and varieties) 
-in Japan accepted in this study. Taxon ID refers to that in FernGreenList ver.1.0.1 (http://www.rdplants.org/gl/). Unless otherwise noted, rbcL GenBank accession numbers 
-are those used in Ebihara et al. (2010). Asterisks indicate newly generated sequences 
-by this study. Voucher information only provided for newly generated sequences. 
+in Japan accepted in this study with data on seasonality and reproductive mode. 
+Taxon ID refers to that in FernGreenList ver.1.0.1 (http://www.rdplants.org/gl/). 
+Unless otherwise noted, rbcL GenBank accession numbers are those used in Ebihara 
+et al. (2010). Asterisks indicate newly generated sequences by this study. 
+Voucher information only provided for newly generated sequences. 
 Information on reproductive modes and ploidy levels follow those in Ebihara et 
 al. (2016, 2017), and only records based on material collected in Japan are used. 
 For reproductive mode, irregular meiosis is not considered, 0 = no information, 
-1 = sexual, 2 = apomictic and 3 = sexual + apomictic. Encoding is Unicode (UTF-8).
+1 = sexual, 2 = apomictic and 3 = sexual + apomictic.
+Encoding is Unicode (UTF-8).
 
 ESM2.csv: A list of fern and lycophyte herbarium specimens from Japan used to
 generate the 10 km2 grid cell distribution maps in Ebihara et al. (2016, 2017). 
