@@ -656,6 +656,58 @@ make_diversity_map <- function (div_data, world_map, occ_data, div_metric, metri
       x = -Inf, 
       y = Inf,
       vjust = 1.2, hjust = -0.5) +
+    scale_fill_scico(palette = "bamako", na.value="grey") +
+    jntools::blank_x_theme() +
+    jntools::blank_y_theme() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.background = element_rect(fill = "transparent", colour = NA),
+      plot.background = element_rect(fill = "transparent", colour = NA),
+      legend.title = element_text(size = 20/.pt),
+      legend.text = element_text(size = 16/.pt),
+      legend.justification=c(1,0), 
+      legend.position=c(1.1,0))
+}
+
+
+#' Make a plot showing selected alpha diversity metric on a map of Japan
+#'
+#' @param div_data Alpha diversity matrix; rows are communities
+#' (1km2 grid cells), and columns are various alpha diversity metrics.
+#' @param world_map Background world mapp
+#' @param occ_data Occurrence data, with one row per
+#' grid cell per taxon, including hybrids.
+#' @param div_metric Selected diversity metric to plot.
+#' Must one of the column names of div_dat.
+#' @param metric_title Character: title to use for legend for
+#' diversity metric.
+#'
+#' @return ggplot object
+make_diversity_map_bw <- function (div_data, world_map, occ_data, div_metric, metric_title, label) {
+  
+  div_metric <- sym(div_metric)
+  
+  ggplot(world_map, aes(x = longitude, y = latitude)) +
+    geom_polygon(aes(group = group), fill = "light grey") +
+    geom_tile(data = div_data,
+              aes(fill = !!div_metric),
+              color = "black", size = 0.05) + # color and width of lines around tiles
+    coord_quickmap(
+      xlim = c(pull(occ_data, longitude) %>% min %>% floor, 
+               pull(occ_data, longitude) %>% max %>% ceiling),
+      ylim = c(pull(occ_data, latitude) %>% min %>% floor, 
+               pull(occ_data, latitude) %>% max %>% ceiling)
+    )  +
+    labs(
+      fill = metric_title
+    ) +
+    annotate(
+      "text", label = label, size = 12/.pt, fontface = "bold",
+      x = -Inf, 
+      y = Inf,
+      vjust = 1.2, hjust = -0.5) +
+    scale_fill_scico(palette = "grayC", na.value = "white") +
     jntools::blank_x_theme() +
     jntools::blank_y_theme() +
     theme(

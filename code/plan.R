@@ -211,6 +211,8 @@ plan <- drake_plan (
   
   # Make figures ----
   
+  ### Fig 1, color ###
+  
   # - Richness of ferns and lycophytes
   pterido_richness_map = make_diversity_map(
     div_data = alpha_diversity_pteridos, 
@@ -218,8 +220,7 @@ plan <- drake_plan (
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
     metric_title = "No. species ",
-    label = "a") +
-    scale_fill_scico(palette = "bamako", na.value="grey"),
+    label = "a"),
   
   # - PD of ferns and lycophytes
   pterido_pd_map = make_diversity_map(
@@ -228,8 +229,7 @@ plan <- drake_plan (
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
     metric_title = "Phylo. \n diversity",
-    label = "b") +
-    scale_fill_scico(palette = "bamako", na.value="grey"),
+    label = "b"),
 
   # - PD of ferns only
   fern_pd_map = make_diversity_map(
@@ -238,8 +238,7 @@ plan <- drake_plan (
     occ_data = occ_data_pteridos, 
     div_metric = "pd_obs", 
     metric_title = "Phylo. \n diversity",
-    label = "c") +
-    scale_fill_scico(palette = "bamako", na.value="grey"),
+    label = "c"),
   
   # - Richness of apomictic ferns
   fern_apo_map = make_diversity_map(
@@ -248,8 +247,7 @@ plan <- drake_plan (
     occ_data = occ_data_pteridos, 
     div_metric = "richness", 
     metric_title = "No. species",
-    label = "d") +
-    scale_fill_scico(palette = "bamako", na.value="grey"),
+    label = "d"),
   
   # - Percent apomictic taxa (on log-scale)
   fern_apo_frac_map = make_diversity_map(
@@ -265,7 +263,6 @@ plan <- drake_plan (
     metric_title = "% apomictic",
     label = "e") +
     scale_fill_scico(
-      name = "% apomictic",
       palette = "bamako", na.value="#003F4C", # set NA value to be same color as 0
       trans = "log", breaks = c(6,12,25,50,100)),
 
@@ -301,7 +298,97 @@ plan <- drake_plan (
     filename = file_out(here("manuscript/fig_1.pdf")),
     height = 234, width = 174, units = "mm"),
   
-  # Make jitter plots
+  ### Fig 1, black and white
+  
+  # - Richness of ferns and lycophytes
+  pterido_richness_map_bw = make_diversity_map_bw(
+    div_data = alpha_diversity_pteridos, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "richness", 
+    metric_title = "No. species ",
+    label = "a"),
+  
+  # - PD of ferns and lycophytes
+  pterido_pd_map_bw = make_diversity_map_bw(
+    div_data = alpha_diversity_pteridos, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "pd_obs", 
+    metric_title = "Phylo. \n diversity",
+    label = "b"),
+  
+  # - PD of ferns only
+  fern_pd_map_bw = make_diversity_map_bw(
+    div_data = alpha_diversity_ferns, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "pd_obs", 
+    metric_title = "Phylo. \n diversity",
+    label = "c"),
+  
+  # - Richness of apomictic ferns
+  fern_apo_map_bw = make_diversity_map_bw(
+    div_data = richness_apos, 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "richness", 
+    metric_title = "No. species",
+    label = "d"),
+  
+  # - Percent apomictic taxa (on log-scale)
+  fern_apo_frac_map_bw = make_diversity_map_bw(
+    # Replace 0 with NA for log-transform
+    div_data = percent_apomictic_ferns %>%
+      mutate(percent_apomictic = case_when(
+        percent_apomictic == 0 ~ NaN,
+        TRUE ~ percent_apomictic * 100
+      )), 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "percent_apomictic", 
+    metric_title = "% apomictic",
+    label = "e") +
+    scale_fill_scico(
+      palette = "grayC",
+      na.value="#FFFFFF", # set NA value to be same color as 0
+      trans = "log", breaks = c(6,12,25,50,100)),
+  
+  # - Richness of endangered ferns and lycophytes (on log-scale)
+  fern_endangered_map_bw = make_diversity_map_bw(
+    # Replace 0 with NA for log-transform
+    div_data = richness_endangered %>%
+      mutate(richness = case_when(
+        richness == 0 ~ NaN,
+        TRUE ~ richness
+      )), 
+    world_map = world_map, 
+    occ_data = occ_data_pteridos, 
+    div_metric = "richness", 
+    metric_title = "No. species",
+    label = "f") +
+    scale_fill_scico(
+      palette = "grayC",
+      na.value="#FFFFFF", # set NA value to be same color as 0
+      trans = "log", breaks = c(3,6,12,24,48)),
+  
+  # Combine subplots.
+  fig_1_bw = patchwork::wrap_plots(
+    list(
+      pterido_richness_map_bw, pterido_pd_map_bw,
+      fern_pd_map_bw, fern_apo_map_bw,
+      fern_apo_frac_map_bw, fern_endangered_map_bw),
+    ncol = 2, nrow = 3
+  ),
+  
+  # Write out final plot at full-page size.
+  fig_1_bw_out = ggsave(
+    plot = fig_1_bw, 
+    filename = file_out(here("manuscript/fig_1_bw.pdf")),
+    height = 234, width = 174, units = "mm"),
+  
+  ### Fig 2 ###
+  
   fig_2 = assemble_jitter_plots(
     cps_by_repro, lat_by_repro, cps_by_growth, cps_by_ploidy, 
     lat_by_repro_tukey,
