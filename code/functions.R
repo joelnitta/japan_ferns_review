@@ -625,7 +625,6 @@ get_limit <- function (data, var, type = c("min", "max", "abs"), digits = 2) {
 #'
 #' @param div_data Alpha diversity matrix; rows are communities
 #' (1km2 grid cells), and columns are various alpha diversity metrics.
-#' @param world_map Background world mapp
 #' @param occ_data Occurrence data, with one row per
 #' grid cell per taxon, including hybrids.
 #' @param div_metric Selected diversity metric to plot.
@@ -634,40 +633,36 @@ get_limit <- function (data, var, type = c("min", "max", "abs"), digits = 2) {
 #' diversity metric.
 #'
 #' @return ggplot object
-make_diversity_map <- function (div_data, world_map, occ_data, div_metric, metric_title, label) {
+make_diversity_map <- function (div_data, occ_data, div_metric, metric_title, label) {
   
   div_metric <- sym(div_metric)
   
-  ggplot(world_map, aes(x = longitude, y = latitude)) +
-    geom_polygon(aes(group = group), fill = "light grey") +
-    geom_tile(data = div_data,
-              aes(fill = !!div_metric)) + 
+  ggplot(data = div_data, aes(x = longitude, y = latitude)) +
+    geom_tile(aes(fill = !!div_metric)) + 
     coord_quickmap(
       xlim = c(pull(occ_data, longitude) %>% min %>% floor, 
                pull(occ_data, longitude) %>% max %>% ceiling),
       ylim = c(pull(occ_data, latitude) %>% min %>% floor, 
                pull(occ_data, latitude) %>% max %>% ceiling)
-    )  +
-    labs(
-      fill = metric_title
     ) +
-    annotate(
-      "text", label = label, size = 12/.pt, fontface = "bold",
-      x = -Inf, 
-      y = Inf,
-      vjust = 1.2, hjust = -0.5) +
-    scale_fill_scico(palette = "bamako", na.value="grey") +
-    jntools::blank_x_theme() +
-    jntools::blank_y_theme() +
+    labs(
+      fill = metric_title,
+      subtitle = label
+    ) +
+    # jntools::blank_x_theme() +
+    # jntools::blank_y_theme() +
     theme(
-      panel.grid.major = element_blank(),
+      panel.grid.major = element_line(size = 0.1, color = "dark grey"),
       panel.grid.minor = element_blank(),
-      panel.background = element_rect(fill = "transparent", colour = NA),
-      plot.background = element_rect(fill = "transparent", colour = NA),
+      plot.subtitle = element_text(face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
       legend.title = element_text(size = 20/.pt),
       legend.text = element_text(size = 16/.pt),
-      legend.justification=c(1,0), 
-      legend.position=c(1.1,0))
+      legend.justification=c(0,1), legend.position=c(0,1)
+      ) +
+    scale_y_continuous(labels = scales::degree_format(unit = "N", accuracy = 1)) +
+    scale_x_continuous(labels = scales::degree_format(unit = "E", accuracy = 1))
 }
 
 
@@ -698,7 +693,7 @@ make_diversity_map_bw <- function (div_data, world_map, occ_data, div_metric, me
                pull(occ_data, longitude) %>% max %>% ceiling),
       ylim = c(pull(occ_data, latitude) %>% min %>% floor, 
                pull(occ_data, latitude) %>% max %>% ceiling)
-    )  +
+    ) +
     labs(
       fill = metric_title
     ) +
