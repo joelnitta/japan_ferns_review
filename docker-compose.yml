@@ -1,7 +1,7 @@
 version: "3"
 services:
   analysis:
-    image: joelnitta/japan_ferns_review
+    image: joelnitta/japan_ferns_review:3.6.0
     ports:
       - "8787:8787"
     volumes:
