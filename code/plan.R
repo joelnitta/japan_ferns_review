@@ -312,7 +312,7 @@ plan <- drake_plan (
 
   # Write out manuscript ----
   ms = rmarkdown::render(
-    knitr_in(here::here("manuscript/japan_ferns_diversity_ms.Rmd")),
-    output_file = file_out(here::here("manuscript/japan_ferns_diversity_ms.docx")),
+    knitr_in(here::here("manuscript/japan_ferns_review_ms.Rmd")),
+    output_file = file_out(here::here("manuscript/japan_ferns_review_ms.docx")),
     quiet = TRUE)
 )
