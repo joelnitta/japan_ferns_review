@@ -56,7 +56,8 @@ install.packages(cran_packages)
 github_packages <- c(
   "joelnitta/jntools",
   "thomasp85/patchwork",
-  "danlwarren/RWTY"
+  "danlwarren/RWTY",
+  "r-lib/scales" # For degree_format(), which isn't in CRAN scales yet
 )
 
 remotes::install_github(github_packages)
