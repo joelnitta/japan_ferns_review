@@ -1,6 +1,6 @@
 # japan_ferns_review
 
-Code repository and raw data for Ebihara and Nitta. "An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago", Journal of Plant Research (2019). [https://doi.org/10.1007/s10265-019-01137-3](https://doi.org/10.1007/s10265-019-01137-3)
+Code repository for Ebihara and Nitta. "An update and reassessment of fern and lycophyte diversity data in the Japanese Archipelago", Journal of Plant Research (2019). [https://doi.org/10.1007/s10265-019-01137-3](https://doi.org/10.1007/s10265-019-01137-3)
 
 All code is in [R](https://cran.r-project.org/). The [drake package](https://ropensci.github.io/drake/) is used to manage the workflow. To run all analyses and generate the manuscript, simply [clone this repository](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository) and run `make.R`.
 
