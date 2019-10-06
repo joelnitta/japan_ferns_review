@@ -65,7 +65,7 @@ Atsushi Ebihara^1^ & Joel H. Nitta^2^
 ^1^Departmento of Botany, National Museum of Nature and Science, 4-1-1 Amakubo, Tsukuba 305-0005, Japan  
 ebihara@kahaku.go.jp
 
-^2^Department of Botany, National Museum of Natural History, Smithsonian Institute, Washington, D.C., 20013, U.S.A.
+^2^Department of Botany, National Museum of Natural History, Smithsonian Institution, Washington, D.C., 20013, U.S.A.
 
 #####
 
