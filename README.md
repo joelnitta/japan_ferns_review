@@ -4,7 +4,7 @@ Code repository for Ebihara and Nitta. "An update and reassessment of fern and l
 
 All code is in [R](https://cran.r-project.org/). The [drake package](https://ropensci.github.io/drake/) is used to manage the workflow.
 
-Raw data (except for a single file, `FernGreenListV1.01.xls`, which is included in this repo) are kept on Dryad (https://doi.org/10.5061/dryad.4362p32).
+Raw data (except for a single file, `FernGreenListV1.01.xls`, which is included in this repo) are kept on [Dryad](https://datadryad.org/) (https://doi.org/10.5061/dryad.4362p32).
 
 To run all analyses and generate the manuscript, first [clone this repository](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository). Next, [download the raw data from the Dryad repository](https://doi.org/10.5061/dryad.4362p32), unzip it, and move it to the `data/` folder. Finally, run `make.R`.
 
