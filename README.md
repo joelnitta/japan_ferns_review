@@ -26,7 +26,7 @@ docker-compose up -d
 If `docker-compose` is not available, you can also launch the container using `docker run`. Be sure to replace the path on the left side of `:` (in this example, `/path/to/japan_ferns_review/`) with the path to this repo on your machine.
 
 ```
-docker run -d --name japan_ferns_review_analysis_1 -e DISABLE_AUTH=true -v /path/to/japan_ferns_review/:home/rstudio/japan_ferns_review japan_ferns_review:3.6.0 bash
+docker run -d --name japan_ferns_review_analysis_1 -e DISABLE_AUTH=true -v /path/to/japan_ferns_review/:/home/rstudio/japan_ferns_review joelnitta/japan_ferns_review:3.6.0 bash
 ```
 
 Enter the container:
