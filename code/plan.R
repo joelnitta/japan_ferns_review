@@ -57,7 +57,7 @@ plan <- drake_plan (
   # mrBayes on CIPRES.
   japan_pterido_tree_raw = read_nexus_in_zip(
     file_in("data/japan_pterido_rbcl_cipres.zip"), 
-    "infile.nex.con.tre")[[2]],
+    "japan_pterido_rbcl_cipres/infile.nex.con.tre")[[2]],
   
   # Process trees.
   # - tree including ferns and lycophtyes
@@ -75,7 +75,7 @@ plan <- drake_plan (
   # Load list of all 10km2 grid cells across Japan.
   all_cells = read_csv(
     file_in("data/2_grid_cells_all.csv"),
-    col_types = "ccnn") %>%
+    col_types = "cnn") %>%
     select(secondary_grid_code = id, longitude = x, latitude = y),
   
   # Analyze basic statistics ----
